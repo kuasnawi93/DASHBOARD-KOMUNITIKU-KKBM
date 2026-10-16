@@ -47,7 +47,13 @@
 <nav id="main-nav"></nav>
 
 <div class="wrap" id="content">
-  <a class="back" href="kursus.html">&larr; Kembali ke Senarai Kursus</a>
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a href="index.html">Laman Utama</a>
+    <span class="sep">/</span>
+    <a href="kursus.html">Kursus</a>
+    <span class="sep">/</span>
+    <span class="current" id="bcKursusTitle">Detail Kursus</span>
+  </nav>
   <div id="detail"></div>
 </div>
 
@@ -87,6 +93,9 @@ var kursus=[
 var params=new URLSearchParams(window.location.search);
 var id=parseInt(params.get('id'))||1;
 var k=kursus.find(function(x){return x.id===id;})||kursus[0];
+// Update breadcrumb title
+var bcKT=document.getElementById('bcKursusTitle');
+if(bcKT)bcKT.textContent=k.title;
 
 var enrolled=JSON.parse(localStorage.getItem('enrolled')||'[]');
 var isEnrolled=enrolled.indexOf(k.id)>=0;
@@ -166,7 +175,7 @@ function addToCart(){
   setTimeout(function(){t.style.display='none';},3000);
 }
 </script>
-
+<script src="ai-genie.js"></script>
 <footer>&copy; 2025 KomunitiKu @ KKBM &middot; <a href="kursus.html">Lihat Semua Kursus</a></footer>
 </body>
 </html>

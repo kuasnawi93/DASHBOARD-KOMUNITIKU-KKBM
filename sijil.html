@@ -63,7 +63,13 @@
 <nav id="main-nav"></nav>
 
 <div class="wrap">
-  <a class="back" href="dashboard.html">&larr; Kembali ke Dashboard</a>
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a href="index.html">Laman Utama</a>
+    <span class="sep">/</span>
+    <span id="bcDash"><a href="dashboard-pelajar.html">Dashboard</a></span>
+    <span class="sep">/</span>
+    <span class="current">Sijil Saya</span>
+  </nav>
   <div class="page-title">&#127941; Sijil Anda</div>
   <div class="page-sub">Sijil rasmi dikeluarkan oleh Kolej Komuniti Bukit Mertajam.</div>
 
@@ -96,7 +102,7 @@
 
   <div class="actions">
     <button class="btn" onclick="printSijil()">&#128438; Muat Turun / Cetak Sijil</button>
-    <button class="btn-sec" onclick="window.location='dashboard.html'">&#8592; Kembali ke Dashboard</button>
+    <button class="btn-sec" id="backDashBtn">&#8592; Kembali ke Dashboard</button>
   </div>
 
   <div class="how-card">
@@ -116,6 +122,19 @@
 <script src="nav.js"></script>
 <script src="ui.js"></script>
 <script>
+// Auth guard — sijil only for logged-in pelajar or admin
+var _sijilUser=JSON.parse(localStorage.getItem('kkbm_user')||'null');
+if(!_sijilUser){window.location='login.html';}
+// Set correct dashboard link per role
+(function(){
+  var isAdmin=_sijilUser&&_sijilUser.role==='admin';
+  var dashUrl=isAdmin?'dashboard-admin.html':'dashboard-pelajar.html';
+  var bcDash=document.getElementById('bcDash');
+  if(bcDash){bcDash.innerHTML='<a href="'+dashUrl+'">Dashboard</a>';}
+  var backBtn=document.getElementById('backDashBtn');
+  if(backBtn){backBtn.onclick=function(){window.location=dashUrl;};}
+})();
+
 var kursusData=[
   {id:1,title:'Asas Literasi Digital'},
   {id:2,title:'Microsoft Excel Intermediate'},

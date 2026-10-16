@@ -18,7 +18,6 @@
   var PUBLIC_NAV = [
     { label: 'Kursus', href: 'kursus.html' },
     { label: 'Cara Belajar', href: 'index.html#cara-belajar' },
-    { label: 'Sijil', href: 'sijil.html' },
     { label: 'Tentang Kami', href: 'tentang.html' },
   ];
 
