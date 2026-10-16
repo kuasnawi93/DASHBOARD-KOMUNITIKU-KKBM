@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Admin Dashboard &mdash; KomunitiKu @ KKBM</title>
+<link rel="stylesheet" href="nav.css"/>
+<link rel="stylesheet" href="design.css"/>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  :root{--bg:#0d1117;--surface:#161b22;--border:#2d3748;--teal:#14b8a6;--teal-light:#2dd4bf;--teal-dim:#0d9488;--text:#e2e8f0;--muted:#8b949e;--white:#fff;--yellow:#fbbf24;--green:#4ade80;--red:#f87171;--purple:#a78bfa;}
+  body{font-family:-apple-system,"Segoe UI",system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;font-size:15px;}
+  a{color:var(--teal);text-decoration:none;}
+  .wrap{max-width:900px;margin:0 auto;padding:36px 2rem 60px;}
+  /* Admin banner */
+  .admin-banner{background:linear-gradient(135deg,#1a0f00,#2d1f03);border:1px solid #78350f;border-radius:16px;padding:24px 28px;margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  .admin-banner-left .role-tag{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--yellow);margin-bottom:4px;}
+  .admin-banner-left h1{font-size:1.5rem;font-weight:800;color:var(--white);margin-bottom:2px;}
+  .admin-banner-left p{font-size:13px;color:var(--muted);}
+  .admin-banner-right{display:flex;gap:10px;flex-wrap:wrap;}
+  .btn{background:var(--teal);color:#fff;font-weight:700;font-size:13px;padding:9px 18px;border-radius:9px;border:none;cursor:pointer;display:inline-block;transition:background 0.2s;}
+  .btn:hover{background:var(--teal-dim);color:#fff;}
+  .btn-warn{background:#92400e;color:var(--yellow);font-weight:700;font-size:13px;padding:9px 18px;border-radius:9px;border:none;cursor:pointer;display:inline-block;}
+  .btn-warn:hover{background:#b45309;}
+  /* KPI Stats */
+  .kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:28px;}
+  .kpi{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px;}
+  .kpi-icon{font-size:24px;margin-bottom:8px;}
+  .kpi-num{font-size:1.8rem;font-weight:800;line-height:1;margin-bottom:4px;}
+  .kpi-label{font-size:12px;color:var(--muted);}
+  .kpi-trend{font-size:11px;margin-top:6px;font-weight:600;}
+  .trend-up{color:var(--green);}
+  .trend-down{color:var(--red);}
+  /* Tabs */
+  .tabs{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;}
+  .tab{font-size:13px;font-weight:600;padding:7px 16px;border-radius:999px;cursor:pointer;border:1px solid var(--border);color:var(--muted);background:transparent;transition:all 0.2s;}
+  .tab.active,.tab:hover{background:var(--teal);border-color:var(--teal);color:#fff;}
+  /* Cards */
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:22px;margin-bottom:18px;}
+  .card-title{font-size:15px;font-weight:700;color:var(--white);margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;}
+  .card-title span{font-size:12px;color:var(--muted);font-weight:400;}
+  /* Table */
+  table{width:100%;border-collapse:collapse;font-size:13px;}
+  th{text-align:left;padding:8px 12px;color:var(--muted);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:0.06em;border-bottom:1px solid var(--border);}
+  td{padding:10px 12px;border-bottom:1px solid var(--border);color:var(--text);vertical-align:middle;}
+  tr:last-child td{border-bottom:none;}
+  tr:hover td{background:rgba(20,184,166,0.03);}
+  /* Badges */
+  .badge{font-size:10px;font-weight:700;padding:3px 9px;border-radius:999px;letter-spacing:0.06em;text-transform:uppercase;}
+  .badge-free{background:#0d2926;color:var(--teal-light);}
+  .badge-paid{background:#2d1f03;color:var(--yellow);}
+  .badge-active{background:#0d2926;color:var(--green);}
+  .badge-done{background:#1a2a1a;color:var(--green);}
+  .badge-pending{background:#1a1209;color:var(--yellow);}
+  /* Income chart bars */
+  .income-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);}
+  .income-row:last-child{border-bottom:none;}
+  .income-month{min-width:110px;font-size:13px;color:var(--text);}
+  .income-bar-wrap{flex:1;height:8px;background:var(--border);border-radius:999px;overflow:hidden;}
+  .income-bar-fill{height:100%;border-radius:999px;transition:width 0.6s;}
+  .income-amount{min-width:80px;text-align:right;font-size:13px;font-weight:700;color:var(--green);}
+  /* Analytics */
+  .analytics-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:14px;}
+  .analytic-card{background:#0d1117;border:1px solid var(--border);border-radius:12px;padding:16px;}
+  .analytic-num{font-size:1.4rem;font-weight:800;margin-bottom:2px;}
+  .analytic-label{font-size:11px;color:var(--muted);}
+  /* Mode toggle */
+  .mode-toggle{cursor:pointer;}
+  /* Dropdown action */
+  .action-btn{background:transparent;border:1px solid var(--border);color:var(--muted);font-size:12px;padding:4px 10px;border-radius:6px;cursor:pointer;transition:all 0.2s;}
+  .action-btn:hover{border-color:var(--teal);color:var(--teal);}
+  footer{border-top:1px solid var(--border);padding:24px 2rem;text-align:center;color:var(--muted);font-size:12px;max-width:900px;margin:0 auto;}
+  @media(max-width:700px){.kpi-grid{grid-template-columns:repeat(2,1fr);}.analytics-grid{grid-template-columns:1fr 1fr;}}
+</style>
+</head>
+<body>
+<nav id="main-nav"></nav>
+
+<div class="wrap">
+  <!-- Admin Banner -->
+  <div class="admin-banner">
+    <div class="admin-banner-left">
+      <div class="role-tag">⚙️ Admin Panel</div>
+      <h1 id="adminName">Dashboard Admin</h1>
+      <p>Kolej Komuniti Bukit Mertajam &mdash; Platform PSH KomunitiKu</p>
+    </div>
+    <div class="admin-banner-right">
+      <a href="ai-agent.html" class="btn">🤖 AI Agent</a>
+      <a href="kursus.html" class="btn-warn">+ Kursus Baru</a>
+    </div>
+  </div>
+
+  <!-- KPI Stats -->
+  <div class="kpi-grid">
+    <div class="kpi">
+      <div class="kpi-icon">👥</div>
+      <div class="kpi-num" style="color:var(--teal);">1,247</div>
+      <div class="kpi-label">Jumlah Pelajar</div>
+      <div class="kpi-trend trend-up">▲ +23 minggu ini</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-icon">📚</div>
+      <div class="kpi-num" style="color:var(--yellow);">48</div>
+      <div class="kpi-label">Kursus Aktif</div>
+      <div class="kpi-trend trend-up">▲ +2 bulan ini</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-icon">🏆</div>
+      <div class="kpi-num" style="color:var(--green);">863</div>
+      <div class="kpi-label">Sijil Dikeluarkan</div>
+      <div class="kpi-trend trend-up">▲ +41 bulan ini</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-icon">💰</div>
+      <div class="kpi-num" style="color:var(--green);">RM 18.4K</div>
+      <div class="kpi-label">Jumlah Income</div>
+      <div class="kpi-trend trend-up">▲ +RM 1,200 bulan ini</div>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('peserta',this)" id="tab-btn-peserta">👥 Peserta</button>
+    <button class="tab" onclick="showTab('kursus',this)">📚 Kursus</button>
+    <button class="tab" onclick="showTab('income',this)">💰 Income</button>
+    <button class="tab" onclick="showTab('sijil',this)">🏆 Sijil</button>
+    <button class="tab" onclick="showTab('analytics',this)">📊 Analytics</button>
+  </div>
+
+  <!-- PESERTA TAB -->
+  <div id="tab-peserta">
+    <div class="card">
+      <div class="card-title">Senarai Peserta <span id="peserta-count">Jumlah: 5</span></div>
+      <div style="margin-bottom:12px;display:flex;gap:8px;flex-wrap:wrap;">
+        <input id="searchPeserta" type="text" oninput="filterPeserta()" placeholder="Cari nama / emel..." style="background:#0d1117;border:1px solid var(--border);border-radius:8px;padding:7px 12px;color:var(--text);font-size:13px;outline:none;flex:1;min-width:160px;"/>
+        <select id="filterStatus" onchange="filterPeserta()" style="background:#0d1117;border:1px solid var(--border);border-radius:8px;padding:7px 12px;color:var(--text);font-size:13px;outline:none;">
+          <option value="">Semua Status</option>
+          <option value="Aktif">Aktif</option>
+          <option value="Selesai">Selesai</option>
+        </select>
+      </div>
+      <table id="pesertaTable">
+        <tr><th>Nama</th><th>Emel</th><th>Kawasan</th><th>Status</th><th>Kursus</th><th>Tindakan</th></tr>
+        <tr data-status="Aktif"><td>Ahmad Faris</td><td>ahmad@demo.com</td><td>Bukit Mertajam</td><td><span class="badge badge-active">Aktif</span></td><td>3</td><td><button class="action-btn" onclick="viewPeserta('Ahmad Faris')">Lihat</button></td></tr>
+        <tr data-status="Aktif"><td>Siti Hajar</td><td>siti@gmail.com</td><td>Butterworth</td><td><span class="badge badge-active">Aktif</span></td><td>2</td><td><button class="action-btn" onclick="viewPeserta('Siti Hajar')">Lihat</button></td></tr>
+        <tr data-status="Selesai"><td>Mohd Izzat</td><td>izzat@yahoo.com</td><td>Kepala Batas</td><td><span class="badge badge-done">Selesai</span></td><td>1</td><td><button class="action-btn" onclick="viewPeserta('Mohd Izzat')">Lihat</button></td></tr>
+        <tr data-status="Aktif"><td>Nurul Ain</td><td>ain@hotmail.com</td><td>Nibong Tebal</td><td><span class="badge badge-active">Aktif</span></td><td>4</td><td><button class="action-btn" onclick="viewPeserta('Nurul Ain')">Lihat</button></td></tr>
+        <tr data-status="Selesai"><td>Zulaikha Othman</td><td>zulaikha@gmail.com</td><td>Bukit Mertajam</td><td><span class="badge badge-done">Selesai</span></td><td>2</td><td><button class="action-btn" onclick="viewPeserta('Zulaikha Othman')">Lihat</button></td></tr>
+      </table>
+      <div style="margin-top:12px;font-size:12px;color:var(--muted);">Export: <a href="#" onclick="alert('Export CSV sedang diproses...')">CSV</a> &middot; <a href="#" onclick="alert('Export PDF sedang diproses...')">PDF</a></div>
+    </div>
+  </div>
+
+  <!-- KURSUS TAB -->
+  <div id="tab-kursus" style="display:none;">
+    <div class="card">
+      <div class="card-title">Pengurusan Kursus <span>klik mod untuk tukar</span></div>
+      <table>
+        <tr><th>Kursus</th><th>Jenis</th><th>Mod</th><th>Pelajar</th><th>Selesai</th><th>Rating</th></tr>
+        <tr><td>Asas Literasi Digital</td><td><span class="badge badge-free">Percuma</span></td><td><span class="mode-toggle" data-id="1" data-mod="online"></span></td><td>234</td><td>198</td><td>⭐ 4.8</td></tr>
+        <tr><td>Microsoft Excel</td><td><span class="badge badge-paid">Berbayar</span></td><td><span class="mode-toggle" data-id="2" data-mod="f2f"></span></td><td>87</td><td>54</td><td>⭐ 4.7</td></tr>
+        <tr><td>Reka Bentuk Grafik</td><td><span class="badge badge-free">Percuma</span></td><td><span class="mode-toggle" data-id="3" data-mod="online"></span></td><td>312</td><td>287</td><td>⭐ 4.9</td></tr>
+        <tr><td>e-Dagang Usahawan</td><td><span class="badge badge-paid">Berbayar</span></td><td><span class="mode-toggle" data-id="4" data-mod="f2f"></span></td><td>56</td><td>31</td><td>⭐ 4.6</td></tr>
+        <tr><td>Pengurusan Media Sosial</td><td><span class="badge badge-free">Percuma</span></td><td><span class="mode-toggle" data-id="5" data-mod="online"></span></td><td>445</td><td>401</td><td>⭐ 4.8</td></tr>
+        <tr><td>Keusahawanan F&amp;B</td><td><span class="badge badge-paid">Berbayar</span></td><td><span class="mode-toggle" data-id="6" data-mod="f2f"></span></td><td>78</td><td>44</td><td>⭐ 4.7</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- INCOME TAB -->
+  <div id="tab-income" style="display:none;">
+    <div class="card">
+      <div class="card-title">Laporan Income 2025 <span id="totalIncome"></span></div>
+      <div id="incomeList"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Pecahan Income by Kursus</div>
+      <table>
+        <tr><th>Kursus</th><th>Harga</th><th>Pendaftaran</th><th>Jumlah</th></tr>
+        <tr><td>Microsoft Excel Intermediate</td><td>RM 80</td><td>87</td><td style="color:var(--green);font-weight:700;">RM 6,960</td></tr>
+        <tr><td>e-Dagang untuk Usahawan</td><td>RM 120</td><td>56</td><td style="color:var(--green);font-weight:700;">RM 6,720</td></tr>
+        <tr><td>Keusahawanan F&amp;B</td><td>RM 60</td><td>78</td><td style="color:var(--green);font-weight:700;">RM 4,680</td></tr>
+        <tr style="font-weight:700;"><td colspan="3">JUMLAH KESELURUHAN</td><td style="color:var(--green);">RM 18,360</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- SIJIL TAB -->
+  <div id="tab-sijil" style="display:none;">
+    <div class="card">
+      <div class="card-title">Sijil Dikeluarkan <span>Total: 863</span></div>
+      <table>
+        <tr><th>Nama</th><th>Kursus</th><th>Tarikh</th><th>No. Sijil</th><th>Status</th></tr>
+        <tr><td>Ahmad Faris</td><td>Asas Literasi Digital</td><td>15 Jan 2025</td><td>KKBM/2025/001</td><td><span class="badge badge-done">Issued</span></td></tr>
+        <tr><td>Siti Hajar</td><td>Reka Bentuk Grafik</td><td>18 Jan 2025</td><td>KKBM/2025/002</td><td><span class="badge badge-done">Issued</span></td></tr>
+        <tr><td>Mohd Izzat</td><td>Microsoft Excel</td><td>22 Jan 2025</td><td>KKBM/2025/003</td><td><span class="badge badge-done">Issued</span></td></tr>
+        <tr><td>Nurul Ain</td><td>Media Sosial</td><td>28 Jan 2025</td><td>KKBM/2025/004</td><td><span class="badge badge-done">Issued</span></td></tr>
+        <tr><td>Zulaikha Othman</td><td>e-Dagang Usahawan</td><td>3 Feb 2025</td><td>KKBM/2025/005</td><td><span class="badge badge-done">Issued</span></td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- ANALYTICS TAB -->
+  <div id="tab-analytics" style="display:none;">
+    <div class="card">
+      <div class="card-title">Ringkasan Analitik</div>
+      <div class="analytics-grid">
+        <div class="analytic-card"><div class="analytic-num" style="color:var(--teal);">68%</div><div class="analytic-label">Kadar Penyelesaian Kursus</div></div>
+        <div class="analytic-card"><div class="analytic-num" style="color:var(--yellow);">4.78</div><div class="analytic-label">Purata Rating Kursus</div></div>
+        <div class="analytic-card"><div class="analytic-num" style="color:var(--green);">RM 14.73</div><div class="analytic-label">Income Per Pelajar</div></div>
+        <div class="analytic-card"><div class="analytic-num" style="color:var(--purple);">82%</div><div class="analytic-label">Pelajar Online vs F2F</div></div>
+        <div class="analytic-card"><div class="analytic-num" style="color:var(--red);">12%</div><div class="analytic-label">Kadar Drop-off</div></div>
+        <div class="analytic-card"><div class="analytic-num" style="color:var(--teal);">3.2</div><div class="analytic-label">Purata Kursus / Pelajar</div></div>
+      </div>
+      <div class="card-title" style="margin-top:8px;">Pelajar Mengikut Kawasan</div>
+      <div id="kawasanChart"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Kursus Paling Popular</div>
+      <table>
+        <tr><th>Ranking</th><th>Kursus</th><th>Pendaftaran</th><th>% Selesai</th></tr>
+        <tr><td>🥇 1</td><td>Pengurusan Media Sosial</td><td>445</td><td style="color:var(--green);">90%</td></tr>
+        <tr><td>🥈 2</td><td>Reka Bentuk Grafik Asas</td><td>312</td><td style="color:var(--green);">92%</td></tr>
+        <tr><td>🥉 3</td><td>Asas Literasi Digital</td><td>234</td><td style="color:var(--green);">85%</td></tr>
+        <tr><td>4</td><td>Microsoft Excel</td><td>87</td><td style="color:var(--yellow);">62%</td></tr>
+        <tr><td>5</td><td>Keusahawanan F&amp;B</td><td>78</td><td style="color:var(--yellow);">56%</td></tr>
+        <tr><td>6</td><td>e-Dagang Usahawan</td><td>56</td><td style="color:var(--yellow);">55%</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Peserta Modal -->
+<div id="pesertaModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:500;align-items:center;justify-content:center;">
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px;max-width:360px;width:90%;">
+    <div id="pesertaModalBody"></div>
+    <button onclick="document.getElementById('pesertaModal').style.display='none'" style="width:100%;margin-top:16px;background:var(--teal);color:#fff;border:none;padding:10px;border-radius:10px;font-weight:700;cursor:pointer;">Tutup</button>
+  </div>
+</div>
+
+<footer>&copy; 2025 KomunitiKu @ KKBM &middot; Admin Panel &middot; <a href="ai-agent.html">AI Agent</a></footer>
+
+<script>
+var user=JSON.parse(localStorage.getItem('kkbm_user')||'null');
+if(!user||user.role!=='admin'){window.location='login.html';}
+if(user){document.getElementById('adminName').textContent='Dashboard — '+user.nama;}
+
+function showTab(name,btn){
+  ['peserta','kursus','income','sijil','analytics'].forEach(function(t){
+    var el=document.getElementById('tab-'+t);
+    if(el)el.style.display=(t===name?'block':'none');
+  });
+  document.querySelectorAll('.tab').forEach(function(b){b.classList.remove('active');});
+  btn.classList.add('active');
+}
+
+// Income chart
+var incomeData=[
+  {bulan:'Jan',amount:2400},{bulan:'Feb',amount:3100},{bulan:'Mac',amount:2800},
+  {bulan:'Apr',amount:3600},{bulan:'Mei',amount:3120},{bulan:'Jun',amount:3400}
+];
+var maxIncome=Math.max.apply(null,incomeData.map(function(d){return d.amount;}));
+var totalInc=incomeData.reduce(function(s,d){return s+d.amount;},0);
+document.getElementById('totalIncome').textContent='YTD: RM '+totalInc.toLocaleString();
+document.getElementById('incomeList').innerHTML=incomeData.map(function(d){
+  var pct=(d.amount/maxIncome*100);
+  var color=d.amount===maxIncome?'#4ade80':d.amount<3000?'#fbbf24':'var(--teal)';
+  return '<div class="income-row"><div class="income-month">'+d.bulan+' 2025</div>' +
+    '<div class="income-bar-wrap"><div class="income-bar-fill" style="width:'+pct+'%;background:'+color+';"></div></div>' +
+    '<div class="income-amount">RM '+d.amount.toLocaleString()+'</div></div>';
+}).join('');
+
+// Kawasan chart
+var kawasanData=[
+  {k:'Bukit Mertajam',n:412},{k:'Butterworth',n:287},{k:'Kepala Batas',n:198},
+  {k:'Nibong Tebal',n:156},{k:'Lain-lain',n:194}
+];
+var maxK=Math.max.apply(null,kawasanData.map(function(d){return d.n;}));
+document.getElementById('kawasanChart').innerHTML=kawasanData.map(function(d){
+  return '<div class="income-row"><div class="income-month">'+d.k+'</div>' +
+    '<div class="income-bar-wrap"><div class="income-bar-fill" style="width:'+(d.n/maxK*100)+'%;background:var(--teal);"></div></div>' +
+    '<div class="income-amount" style="color:var(--text);">'+d.n+' pelajar</div></div>';
+}).join('');
+
+// Mode toggles
+var MODES=['online','f2f','hybrid'];
+var LABELS={online:'Online',f2f:'Bersemuka',hybrid:'Hybrid'};
+var MCLASSES={online:'mode-badge mode-online',f2f:'mode-badge mode-f2f',hybrid:'mode-badge mode-hybrid'};
+function renderModeToggles(){
+  var saved=JSON.parse(localStorage.getItem('admin_modes')||'{}');
+  document.querySelectorAll('.mode-toggle').forEach(function(el){
+    var id=parseInt(el.getAttribute('data-id'));
+    var def=el.getAttribute('data-mod');
+    var mod=saved[id]||def;
+    el.innerHTML='<span class="'+MCLASSES[mod]+'" style="cursor:pointer;" title="Klik untuk tukar">'+LABELS[mod]+'</span>';
+    el.onclick=function(){
+      var cur=saved[id]||def;
+      var next=MODES[(MODES.indexOf(cur)+1)%MODES.length];
+      saved[id]=next;
+      localStorage.setItem('admin_modes',JSON.stringify(saved));
+      renderModeToggles();
+    };
+  });
+}
+renderModeToggles();
+
+// Peserta filter
+function filterPeserta(){
+  var q=document.getElementById('searchPeserta').value.toLowerCase();
+  var s=document.getElementById('filterStatus').value;
+  var rows=document.querySelectorAll('#pesertaTable tr[data-status]');
+  var count=0;
+  rows.forEach(function(r){
+    var text=r.textContent.toLowerCase();
+    var status=r.getAttribute('data-status');
+    var show=(!q||text.indexOf(q)>=0)&&(!s||status===s);
+    r.style.display=show?'':'none';
+    if(show)count++;
+  });
+  document.getElementById('peserta-count').textContent='Jumlah: '+count;
+}
+
+function viewPeserta(nama){
+  document.getElementById('pesertaModal').style.display='flex';
+  document.getElementById('pesertaModalBody').innerHTML=
+    '<h3 style="color:var(--white);margin-bottom:12px;">👤 '+nama+'</h3>' +
+    '<div style="font-size:13px;color:var(--muted);line-height:1.9;">'+
+      'Status: <span style="color:var(--green);">Aktif</span><br/>' +
+      'Kursus Didaftar: <strong style="color:var(--text);">3</strong><br/>' +
+      'Selesai: <strong style="color:var(--text);">1</strong><br/>' +
+      'Sijil: <strong style="color:var(--teal);">1</strong><br/>' +
+      'Daftar Sejak: <strong style="color:var(--text);">Januari 2025</strong>' +
+    '</div>';
+}
+</script>
+<script src="logo.js"></script>
+<script src="nav.js"></script>
+<script src="ui.js"></script>
+</body>
+</html>

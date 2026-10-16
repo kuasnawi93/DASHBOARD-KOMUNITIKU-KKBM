@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Daftar &mdash; KomunitiKu @ KKBM</title>
+<link rel="stylesheet" href="nav.css"/>
+<link rel="stylesheet" href="design.css"/>
+<style>
+  body{min-height:100vh;display:flex;flex-direction:column;}
+  .wrap{max-width:460px;margin:60px auto;padding:0 1.5rem;flex:1;}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:36px;}
+  h1{font-size:1.6rem;font-weight:800;color:var(--white);margin-bottom:6px;}
+  .sub{font-size:14px;color:var(--muted);margin-bottom:28px;}
+  .pw-hint{font-size:11px;color:var(--muted);margin-top:4px;}
+  .terms{font-size:12px;color:var(--muted);margin-top:14px;text-align:center;line-height:1.6;}
+  .terms a{color:var(--teal);}
+  .login-link{text-align:center;font-size:13px;color:var(--muted);margin-top:16px;}
+  footer{text-align:center;padding:20px;color:var(--muted);font-size:12px;border-top:1px solid var(--border);margin-top:auto;}
+  /* Success overlay */
+  .success-overlay{
+    display:none;text-align:center;padding:32px 20px;
+  }
+  .success-icon{font-size:3.5rem;margin-bottom:12px;}
+  .success-title{font-size:1.3rem;font-weight:800;color:var(--white);margin-bottom:6px;}
+  .success-sub{font-size:13px;color:var(--muted);margin-bottom:24px;line-height:1.6;}
+  .success-actions{display:flex;flex-direction:column;gap:10px;}
+</style>
+</head>
+<body>
+<nav id="main-nav"></nav>
+
+<div class="wrap">
+  <div class="card">
+
+    <!-- ── FORM VIEW ── -->
+    <div id="formView">
+      <h1>Daftar Akaun</h1>
+      <p class="sub">Sertai KomunitiKu @ KKBM secara percuma hari ini.</p>
+
+      <div id="alertBox" style="display:none;" role="alert"></div>
+
+      <!--
+        FormSubmit: action goes to https://formsubmit.co/YOUR_EMAIL
+        Replace YOUR_EMAIL with actual admin email before deploying.
+        The form also POSTs to Google Sheets via the fetch() in JS below.
+      -->
+      <form id="daftarForm" novalidate>
+        <!-- Hidden fields for FormSubmit config -->
+        <input type="hidden" name="_subject"  value="Pendaftaran Baru — KomunitiKu @ KKBM"/>
+        <input type="hidden" name="_template" value="table"/>
+        <input type="hidden" name="_captcha"  value="false"/>
+        <input type="hidden" name="_next"     value="https://YOUR_GITHUB_USERNAME.github.io/komunitiku-kkbm/daftar-success.html"/>
+        <input type="hidden" name="tarikh"    id="hiddenTarikh"/>
+        <input type="hidden" name="sumber"    value="Platform KomunitiKu"/>
+
+        <div class="form-group">
+          <label for="nama">Nama Penuh <span style="color:var(--red);">*</span></label>
+          <input type="text" id="nama" name="nama" placeholder="Contoh: Ahmad bin Ali" autocomplete="name" required/>
+          <div class="error-msg">Sila masukkan nama penuh anda.</div>
+        </div>
+
+        <div class="form-group">
+          <label for="emel">Emel <span style="color:var(--red);">*</span></label>
+          <input type="email" id="emel" name="emel" placeholder="emel@contoh.com" autocomplete="email" required/>
+          <div class="error-msg">Format emel tidak sah.</div>
+        </div>
+
+        <div class="form-group">
+          <label for="tel">No. Telefon <span style="color:var(--red);">*</span></label>
+          <input type="tel" id="tel" name="telefon" placeholder="01X-XXXXXXX" autocomplete="tel" required/>
+          <div class="error-msg">Sila masukkan nombor telefon.</div>
+        </div>
+
+        <div class="form-group">
+          <label for="kawasan">Kawasan <span style="color:var(--red);">*</span></label>
+          <select id="kawasan" name="kawasan" required>
+            <option value="">-- Pilih Kawasan --</option>
+            <option>Bukit Mertajam</option>
+            <option>Butterworth</option>
+            <option>Kepala Batas</option>
+            <option>Nibong Tebal</option>
+            <option>Lain-lain</option>
+          </select>
+          <div class="error-msg">Sila pilih kawasan.</div>
+        </div>
+
+        <div class="form-group">
+          <label for="pass">Kata Laluan <span style="color:var(--red);">*</span></label>
+          <input type="password" id="pass" name="_pass_placeholder" placeholder="Min. 8 aksara" autocomplete="new-password" required/>
+          <div class="pw-strength"><div class="pw-strength-fill" id="pwBar"></div></div>
+          <div class="pw-hint" id="pwHint">Sekurang-kurangnya 8 aksara.</div>
+          <div class="error-msg">Kata laluan mesti sekurang-kurangnya 8 aksara.</div>
+        </div>
+
+        <div class="form-group">
+          <label for="pass2">Sahkan Kata Laluan <span style="color:var(--red);">*</span></label>
+          <input type="password" id="pass2" placeholder="Ulang kata laluan" autocomplete="new-password" required/>
+          <div class="error-msg">Kata laluan tidak sepadan.</div>
+        </div>
+
+        <button type="submit" class="btn" id="submitBtn">
+          Daftar Sekarang &rarr;
+        </button>
+        <div class="terms">
+          Dengan mendaftar, anda bersetuju dengan
+          <a href="tentang.html">Terma &amp; Syarat</a> dan
+          <a href="tentang.html">Dasar Privasi</a> kami.
+        </div>
+      </form>
+      <div class="login-link">Sudah ada akaun? <a href="login.html">Log Masuk di sini</a></div>
+    </div>
+
+    <!-- ── SUCCESS VIEW (shown after submit) ── -->
+    <div class="success-overlay" id="successView">
+      <div class="success-icon">🎉</div>
+      <div class="success-title">Pendaftaran Berjaya!</div>
+      <div class="success-sub" id="successMsg">
+        Terima kasih! Maklumat anda telah disimpan dan emel pengesahan telah dihantar ke <strong id="successEmail"></strong>.
+      </div>
+      <div class="success-actions">
+        <a href="dashboard-pelajar.html" class="btn" style="display:block;text-align:center;">Ke Dashboard Saya →</a>
+        <a href="kursus.html" class="btn-secondary btn" style="background:transparent;border:1px solid var(--border);color:var(--text);">Terokai Kursus</a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<footer>&copy; 2025 KomunitiKu @ KKBM</footer>
+
+<script src="logo.js"></script>
+<script src="nav.js"></script>
+<script src="ui.js"></script>
+<script>
+/* ================================================================
+   CONFIG — TUKAR INI SEBELUM DEPLOY
+   ================================================================ */
+var CONFIG = {
+  /* FormSubmit: ganti dengan emel admin sebenar */
+  FORMSUBMIT_EMAIL: 'admin@kkbm.edu.my',
+
+  /* Google Apps Script Web App URL
+     Ikut arahan dalam google-apps-script.js untuk setup.
+     Selepas deploy, paste URL di sini. */
+  SHEETS_WEBHOOK: 'https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec',
+
+  /* Set true bila SHEETS_WEBHOOK dah dikonfigurasikan */
+  ENABLE_SHEETS: false,
+};
+/* ================================================================ */
+
+/* Set tarikh pendaftaran */
+document.getElementById('hiddenTarikh').value = new Date().toLocaleString('ms-MY');
+
+/* Password strength meter */
+var pwInput = document.getElementById('pass');
+var pwBar   = document.getElementById('pwBar');
+var pwHint  = document.getElementById('pwHint');
+pwInput.addEventListener('input', function(){
+  var v = pwInput.value;
+  var score = 0;
+  if(v.length >= 8)  score++;
+  if(/[A-Z]/.test(v)) score++;
+  if(/[0-9]/.test(v)) score++;
+  if(/[^A-Za-z0-9]/.test(v)) score++;
+  var pct = (score/4)*100;
+  var colors = ['#f87171','#f87171','#fbbf24','#4ade80','#14b8a6'];
+  var labels = ['','Lemah','Sederhana','Kuat','Sangat Kuat'];
+  pwBar.style.width  = pct + '%';
+  pwBar.style.background = colors[score];
+  pwHint.textContent = score > 0 ? labels[score] : 'Sekurang-kurangnya 8 aksara.';
+  pwHint.style.color = colors[score] || 'var(--muted)';
+});
+
+/* Inline validation on blur */
+document.getElementById('nama').addEventListener('blur', function(){
+  validateField(this,{required:true});
+});
+document.getElementById('emel').addEventListener('blur', function(){
+  validateField(this,{required:true,email:true});
+});
+document.getElementById('tel').addEventListener('blur', function(){
+  validateField(this,{required:true});
+});
+document.getElementById('kawasan').addEventListener('change', function(){
+  validateField(this,{required:'Sila pilih kawasan.'});
+});
+document.getElementById('pass').addEventListener('blur', function(){
+  validateField(this,{required:true,minLength:8});
+});
+document.getElementById('pass2').addEventListener('blur', function(){
+  validateField(this,{required:true,match:{value:document.getElementById('pass').value,label:'Kata Laluan'}});
+});
+
+/* ── Main submit handler ── */
+document.getElementById('daftarForm').addEventListener('submit', function(e){
+  e.preventDefault();
+
+  /* Validate all fields */
+  var ok = true;
+  ok = validateField(document.getElementById('nama'),   {required:true}) && ok;
+  ok = validateField(document.getElementById('emel'),   {required:true,email:true}) && ok;
+  ok = validateField(document.getElementById('tel'),    {required:true}) && ok;
+  ok = validateField(document.getElementById('kawasan'),{required:'Sila pilih kawasan.'}) && ok;
+  ok = validateField(document.getElementById('pass'),   {required:true,minLength:8}) && ok;
+  ok = validateField(document.getElementById('pass2'),  {required:true,match:{value:document.getElementById('pass').value,label:'Kata Laluan'}}) && ok;
+  if(!ok){ showToast('Sila betulkan ralat dalam borang.','error'); return; }
+
+  /* Collect data */
+  var nama    = document.getElementById('nama').value.trim();
+  var emel    = document.getElementById('emel').value.trim();
+  var tel     = document.getElementById('tel').value.trim();
+  var kawasan = document.getElementById('kawasan').value;
+  var tarikh  = new Date().toLocaleString('ms-MY');
+
+  /* Loading state */
+  var btn = document.getElementById('submitBtn');
+  btn.textContent = 'Mendaftar...';
+  btn.classList.add('loading');
+  btn.disabled = true;
+
+  /* 1. Save to localStorage (always — for session) */
+  localStorage.setItem('kkbm_user', JSON.stringify({
+    nama: nama, emel: emel, tel: tel, kawasan: kawasan, role: 'pelajar', tarikh: tarikh
+  }));
+
+  /* 2. Send to Google Sheets (if configured) */
+  var sheetsPromise = Promise.resolve();
+  if(CONFIG.ENABLE_SHEETS && CONFIG.SHEETS_WEBHOOK && CONFIG.SHEETS_WEBHOOK.indexOf('YOUR_SCRIPT_ID') < 0){
+    sheetsPromise = fetch(CONFIG.SHEETS_WEBHOOK, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({nama:nama, emel:emel, telefon:tel, kawasan:kawasan, tarikh:tarikh, sumber:'KomunitiKu Platform'})
+    }).catch(function(err){
+      console.warn('Sheets webhook gagal:', err);
+      /* Non-fatal — continue even if Sheets fails */
+    });
+  }
+
+  /* 3. Send to FormSubmit (emel to admin) */
+  var formSubmitPromise = Promise.resolve();
+  if(CONFIG.FORMSUBMIT_EMAIL && CONFIG.FORMSUBMIT_EMAIL.indexOf('admin@') < 0 || CONFIG.FORMSUBMIT_EMAIL === 'admin@kkbm.edu.my'){
+    /* Build FormData for FormSubmit */
+    var fd = new FormData();
+    fd.append('nama',     nama);
+    fd.append('emel',     emel);
+    fd.append('telefon',  tel);
+    fd.append('kawasan',  kawasan);
+    fd.append('tarikh',   tarikh);
+    fd.append('sumber',   'KomunitiKu Platform');
+    fd.append('_subject', 'Pendaftaran Baru — KomunitiKu @ KKBM');
+    fd.append('_template','table');
+    fd.append('_captcha', 'false');
+
+    formSubmitPromise = fetch('https://formsubmit.co/' + CONFIG.FORMSUBMIT_EMAIL, {
+      method: 'POST',
+      body: fd
+    }).catch(function(err){
+      console.warn('FormSubmit gagal:', err);
+    });
+  }
+
+  /* Wait for both, then show success */
+  Promise.all([sheetsPromise, formSubmitPromise]).then(function(){
+    btn.classList.remove('loading');
+    btn.disabled = false;
+
+    /* Show success overlay */
+    document.getElementById('formView').style.display = 'none';
+    document.getElementById('successEmail').textContent = emel;
+    document.getElementById('successView').style.display = 'block';
+    showToast('🎉 Pendaftaran berjaya!', 'success', 4000);
+
+  }).catch(function(){
+    btn.textContent = 'Daftar Sekarang →';
+    btn.classList.remove('loading');
+    btn.disabled = false;
+    showToast('Ralat sambungan. Cuba semula.', 'error');
+  });
+});
+</script>
+</body>
+</html>

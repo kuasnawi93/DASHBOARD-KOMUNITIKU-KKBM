@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>KomunitiKu @ KKBM — Belajar Tanpa Sempadan</title>
+<style>
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#0d1117;--surface:#161b22;--surface2:#1c2330;--border:#2d3748;
+  --teal:#14b8a6;--teal2:#2dd4bf;--teal3:#0d9488;
+  --orange:#f97316;--purple:#8b5cf6;--blue:#38bdf8;
+  --text:#e2e8f0;--muted:#8b949e;--white:#fff;
+  --green:#4ade80;--yellow:#fbbf24;
+}
+html{scroll-behavior:smooth;}
+body{font-family:-apple-system,"Segoe UI",system-ui,sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;}
+a{color:var(--teal);text-decoration:none;}
+
+/* ============================================================
+   NAVBAR
+   ============================================================ */
+.navbar{
+  position:fixed;top:0;left:0;right:0;z-index:1000;
+  height:64px;display:flex;align-items:center;justify-content:space-between;
+  padding:0 5%;
+  background:rgba(13,17,23,0);
+  border-bottom:1px solid transparent;
+  transition:background 0.4s,border-color 0.4s,backdrop-filter 0.4s;
+}
+.navbar.scrolled{
+  background:rgba(13,17,23,0.92);
+  border-color:var(--border);
+  backdrop-filter:blur(16px);
+}
+.navbar-logo{display:flex;align-items:center;gap:0;}
+.navbar-links{display:flex;gap:2rem;}
+.navbar-links a{color:var(--muted);font-size:14px;font-weight:500;transition:color 0.2s;}
+.navbar-links a:hover{color:var(--teal);}
+.navbar-cta{
+  background:var(--teal);color:#fff;font-size:13px;font-weight:700;
+  padding:9px 22px;border-radius:9px;
+  transition:background 0.2s,transform 0.15s,box-shadow 0.2s;
+  display:inline-block;
+}
+.navbar-cta:hover{background:var(--teal3);color:#fff;transform:translateY(-1px);box-shadow:0 4px 16px rgba(20,184,166,0.4);}
+
+/* ============================================================
+   HERO
+   ============================================================ */
+.hero{
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  position:relative;overflow:hidden;padding:100px 5% 60px;
+  text-align:center;
+}
+
+/* Animated gradient mesh background */
+.hero-bg{
+  position:absolute;inset:0;z-index:0;
+  background:radial-gradient(ellipse 80% 60% at 50% 20%,rgba(20,184,166,0.12),transparent 70%),
+             radial-gradient(ellipse 60% 50% at 20% 80%,rgba(139,92,246,0.1),transparent 60%),
+             radial-gradient(ellipse 50% 50% at 80% 70%,rgba(249,115,22,0.08),transparent 60%),
+             var(--bg);
+}
+
+/* Floating orbs */
+.orb{
+  position:absolute;border-radius:50%;filter:blur(60px);
+  animation:floatOrb 8s ease-in-out infinite;pointer-events:none;
+}
+.orb1{width:400px;height:400px;background:rgba(20,184,166,0.15);top:-100px;left:-100px;animation-delay:0s;}
+.orb2{width:300px;height:300px;background:rgba(139,92,246,0.12);bottom:-80px;right:-80px;animation-delay:-3s;}
+.orb3{width:250px;height:250px;background:rgba(249,115,22,0.1);top:30%;right:10%;animation-delay:-5s;}
+@keyframes floatOrb{
+  0%,100%{transform:translate(0,0) scale(1);}
+  33%{transform:translate(30px,-20px) scale(1.05);}
+  66%{transform:translate(-20px,30px) scale(0.95);}
+}
+
+/* Particle canvas */
+#particles{position:absolute;inset:0;z-index:1;pointer-events:none;}
+
+/* Grid lines overlay */
+.hero-grid{
+  position:absolute;inset:0;z-index:1;pointer-events:none;
+  background-image:
+    linear-gradient(rgba(20,184,166,0.04) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(20,184,166,0.04) 1px,transparent 1px);
+  background-size:60px 60px;
+  mask-image:radial-gradient(ellipse 80% 80% at center,black 30%,transparent 80%);
+}
+
+.hero-content{position:relative;z-index:2;max-width:800px;margin:0 auto;}
+
+/* Badge */
+.hero-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(20,184,166,0.1);border:1px solid rgba(20,184,166,0.3);
+  color:var(--teal2);font-size:12px;font-weight:700;
+  padding:7px 16px;border-radius:999px;margin-bottom:28px;
+  letter-spacing:0.08em;text-transform:uppercase;
+  animation:fadeSlideDown 0.6s ease both;
+}
+.hero-badge-dot{width:7px;height:7px;border-radius:50%;background:var(--teal);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.5;transform:scale(1.3);}}
+
+/* Main headline */
+.hero-h1{
+  font-size:clamp(2.2rem,6vw,4rem);font-weight:900;line-height:1.1;
+  color:var(--white);margin-bottom:20px;
+  animation:fadeSlideUp 0.7s ease 0.15s both;
+}
+.hero-h1 .line{display:block;}
+.hero-h1 .highlight{
+  background:linear-gradient(135deg,var(--teal),var(--blue),var(--purple));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  background-size:200% auto;animation:gradientShift 3s linear infinite;
+}
+@keyframes gradientShift{0%{background-position:0% center;}100%{background-position:200% center;}}
+
+/* Typewriter sub */
+.hero-sub{
+  font-size:clamp(1rem,2vw,1.2rem);color:var(--muted);
+  margin-bottom:36px;max-width:560px;margin-left:auto;margin-right:auto;
+  line-height:1.7;
+  animation:fadeSlideUp 0.7s ease 0.3s both;
+}
+.typewriter{color:var(--teal2);font-weight:600;border-right:2px solid var(--teal);
+  animation:blink 0.75s step-end infinite;white-space:nowrap;overflow:hidden;}
+@keyframes blink{from,to{border-color:var(--teal);}50%{border-color:transparent;}}
+
+/* CTA buttons */
+.hero-actions{
+  display:flex;gap:14px;justify-content:center;flex-wrap:wrap;
+  animation:fadeSlideUp 0.7s ease 0.45s both;
+}
+.btn-hero-primary{
+  background:linear-gradient(135deg,var(--teal),var(--teal3));
+  color:#fff;font-size:15px;font-weight:700;padding:14px 32px;border-radius:12px;
+  display:inline-flex;align-items:center;gap:8px;
+  transition:transform 0.2s,box-shadow 0.2s;
+  box-shadow:0 4px 20px rgba(20,184,166,0.3);
+}
+.btn-hero-primary:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(20,184,166,0.45);color:#fff;}
+.btn-hero-secondary{
+  background:rgba(255,255,255,0.06);color:var(--text);font-size:15px;font-weight:600;
+  padding:13px 30px;border-radius:12px;border:1px solid var(--border);
+  display:inline-flex;align-items:center;gap:8px;
+  transition:border-color 0.2s,background 0.2s;
+}
+.btn-hero-secondary:hover{border-color:var(--teal);background:rgba(20,184,166,0.08);color:var(--teal);}
+
+/* Stats row */
+.hero-stats{
+  display:flex;gap:32px;justify-content:center;flex-wrap:wrap;
+  margin-top:48px;padding-top:36px;border-top:1px solid rgba(255,255,255,0.06);
+  animation:fadeSlideUp 0.7s ease 0.6s both;
+}
+.hero-stat{text-align:center;}
+.hero-stat-num{font-size:1.8rem;font-weight:900;color:var(--white);line-height:1;}
+.hero-stat-label{font-size:12px;color:var(--muted);margin-top:4px;}
+
+/* Scroll indicator */
+.scroll-indicator{
+  position:absolute;bottom:32px;left:50%;transform:translateX(-50%);
+  z-index:2;display:flex;flex-direction:column;align-items:center;gap:6px;
+  color:var(--muted);font-size:11px;letter-spacing:0.1em;text-transform:uppercase;
+  animation:fadeIn 1s ease 1.2s both;
+}
+.scroll-arrow{width:20px;height:20px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(45deg);animation:bounceDown 1.5s ease infinite;}
+@keyframes bounceDown{0%,100%{transform:rotate(45deg) translate(0,0);}50%{transform:rotate(45deg) translate(4px,4px);}}
+
+/* ============================================================
+   SECTION BASE
+   ============================================================ */
+section{padding:90px 5%;}
+.section-wrap{max-width:900px;margin:0 auto;}
+.section-label{font-size:11px;font-weight:700;color:var(--teal);letter-spacing:0.14em;text-transform:uppercase;margin-bottom:10px;}
+.section-title{font-size:clamp(1.6rem,3.5vw,2.4rem);font-weight:800;color:var(--white);margin-bottom:12px;line-height:1.2;}
+.section-sub{font-size:15px;color:var(--muted);max-width:540px;line-height:1.7;margin-bottom:40px;}
+
+/* ============================================================
+   REVEAL ANIMATIONS (scroll-triggered)
+   ============================================================ */
+.reveal{opacity:0;transform:translateY(30px);transition:opacity 0.7s ease,transform 0.7s ease;}
+.reveal.visible{opacity:1;transform:translateY(0);}
+.reveal-left{opacity:0;transform:translateX(-30px);transition:opacity 0.7s ease,transform 0.7s ease;}
+.reveal-left.visible{opacity:1;transform:translateX(0);}
+.reveal-right{opacity:0;transform:translateX(30px);transition:opacity 0.7s ease,transform 0.7s ease;}
+.reveal-right.visible{opacity:1;transform:translateX(0);}
+.reveal-scale{opacity:0;transform:scale(0.9);transition:opacity 0.6s ease,transform 0.6s ease;}
+.reveal-scale.visible{opacity:1;transform:scale(1);}
+.delay-1{transition-delay:0.1s;}.delay-2{transition-delay:0.2s;}.delay-3{transition-delay:0.3s;}
+.delay-4{transition-delay:0.4s;}.delay-5{transition-delay:0.5s;}.delay-6{transition-delay:0.6s;}
+
+/* ============================================================
+   VIDEO SHOWCASE
+   ============================================================ */
+.video-section{background:linear-gradient(180deg,var(--bg),#0a0f1a,var(--bg));text-align:center;}
+.video-showcase{
+  position:relative;max-width:780px;margin:0 auto;border-radius:20px;overflow:hidden;
+  border:1px solid var(--border);box-shadow:0 20px 60px rgba(0,0,0,0.5);
+  background:var(--surface);
+}
+.video-thumbnail{
+  width:100%;aspect-ratio:16/9;background:linear-gradient(135deg,#0d2926 0%,#0f1f3a 50%,#1a0f00 100%);
+  display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;
+}
+.video-thumbnail::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 60% 50% at 50% 50%,rgba(20,184,166,0.2),transparent);
+  animation:videoPulse 3s ease-in-out infinite;
+}
+@keyframes videoPulse{0%,100%{opacity:0.5;}50%{opacity:1;}}
+.video-thumbnail-inner{position:relative;z-index:1;text-align:center;}
+.video-thumbnail-title{font-size:1.3rem;font-weight:800;color:var(--white);margin-bottom:6px;}
+.video-thumbnail-sub{font-size:13px;color:var(--muted);}
+.play-btn{
+  width:72px;height:72px;background:var(--teal);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:28px;margin:0 auto 16px;cursor:pointer;
+  transition:transform 0.2s,box-shadow 0.2s;
+  animation:playPulse 2s ease-in-out infinite;
+  box-shadow:0 0 0 0 rgba(20,184,166,0.5);
+}
+.play-btn:hover{transform:scale(1.08);box-shadow:0 8px 30px rgba(20,184,166,0.5);}
+@keyframes playPulse{
+  0%{box-shadow:0 0 0 0 rgba(20,184,166,0.5);}
+  70%{box-shadow:0 0 0 20px rgba(20,184,166,0);}
+  100%{box-shadow:0 0 0 0 rgba(20,184,166,0);}
+}
+.video-bar{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-top:1px solid var(--border);}
+.video-bar-item{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);}
+.video-bar-item strong{color:var(--text);}
+
+/* ============================================================
+   HOW IT WORKS — animated steps
+   ============================================================ */
+.steps-section{}
+.steps-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;}
+.step-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:16px;
+  padding:24px;text-align:center;
+  transition:border-color 0.3s,transform 0.3s,box-shadow 0.3s;
+  position:relative;overflow:hidden;
+}
+.step-card::before{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,var(--teal),var(--blue));
+  transform:scaleX(0);transform-origin:left;transition:transform 0.3s;
+}
+.step-card:hover{border-color:rgba(20,184,166,0.4);transform:translateY(-4px);box-shadow:0 12px 32px rgba(0,0,0,0.3);}
+.step-card:hover::before{transform:scaleX(1);}
+.step-icon{
+  width:56px;height:56px;background:linear-gradient(135deg,rgba(20,184,166,0.15),rgba(20,184,166,0.05));
+  border:1px solid rgba(20,184,166,0.2);border-radius:14px;
+  display:flex;align-items:center;justify-content:center;font-size:24px;
+  margin:0 auto 16px;transition:transform 0.3s;
+}
+.step-card:hover .step-icon{transform:scale(1.1) rotate(-5deg);}
+.step-num{font-size:11px;font-weight:700;color:var(--teal);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:6px;}
+.step-title{font-size:15px;font-weight:700;color:var(--white);margin-bottom:8px;}
+.step-desc{font-size:13px;color:var(--muted);line-height:1.6;}
+.step-connector{position:absolute;top:38px;right:-12px;font-size:18px;color:var(--border);z-index:1;}
+
+/* ============================================================
+   ANIMATED STATS
+   ============================================================ */
+.stats-section{
+  background:linear-gradient(180deg,var(--bg),#0a0f1a);
+  border-top:1px solid var(--border);border-bottom:1px solid var(--border);
+  padding:70px 5%;
+}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0;}
+.stat-item{
+  text-align:center;padding:24px;
+  border-right:1px solid var(--border);
+}
+.stat-item:last-child{border-right:none;}
+.stat-number{font-size:2.8rem;font-weight:900;line-height:1;margin-bottom:6px;}
+.stat-number.c1{color:var(--teal);}
+.stat-number.c2{color:var(--yellow);}
+.stat-number.c3{color:var(--green);}
+.stat-number.c4{color:var(--orange);}
+.stat-suffix{font-size:1.4rem;}
+.stat-desc{font-size:13px;color:var(--muted);}
+.stat-trend{font-size:11px;color:var(--green);font-weight:600;margin-top:4px;}
+
+/* ============================================================
+   COURSE CARDS — 3D hover
+   ============================================================ */
+.courses-section{}
+.courses-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+.course-card-3d{
+  perspective:1000px;cursor:pointer;
+}
+.course-card-inner{
+  background:var(--surface);border:1px solid var(--border);border-radius:18px;
+  overflow:hidden;
+  transition:transform 0.4s ease,box-shadow 0.4s ease,border-color 0.3s;
+  transform-style:preserve-3d;
+}
+.course-card-3d:hover .course-card-inner{
+  box-shadow:0 20px 50px rgba(0,0,0,0.4);
+  border-color:rgba(20,184,166,0.4);
+}
+.course-thumb-3d{height:130px;display:flex;align-items:center;justify-content:center;font-size:3rem;position:relative;overflow:hidden;}
+.course-thumb-3d::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(0deg,var(--surface) 0%,transparent 40%);
+}
+.ct1{background:linear-gradient(135deg,#0f3d38,#134e4a);}
+.ct2{background:linear-gradient(135deg,#0f2744,#1e3a5f);}
+.ct3{background:linear-gradient(135deg,#2d0f2d,#4a1942);}
+.ct4{background:linear-gradient(135deg,#2d1500,#451a03);}
+.ct5{background:linear-gradient(135deg,#0f2d0f,#1a3a1a);}
+.ct6{background:linear-gradient(135deg,#1a1400,#3a2a1a);}
+.course-card-body{padding:16px 18px 18px;}
+.course-badges-row{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;}
+.course-badge{font-size:10px;font-weight:700;padding:3px 10px;border-radius:999px;text-transform:uppercase;letter-spacing:0.06em;}
+.cb-free{background:#0d2926;color:var(--teal2);}
+.cb-paid{background:#2d1f03;color:var(--yellow);}
+.cb-online{background:#0a2010;color:var(--green);border:1px solid #166534;}
+.cb-f2f{background:#0f1f3a;color:#93c5fd;border:1px solid #1e3a5f;}
+.cb-online::before,.cb-f2f::before{content:'● ';font-size:7px;}
+.course-card-title{font-size:14px;font-weight:700;color:var(--white);margin-bottom:4px;}
+.course-card-meta{font-size:12px;color:var(--muted);margin-bottom:12px;}
+.course-card-footer{display:flex;align-items:center;justify-content:space-between;padding-top:12px;border-top:1px solid var(--border);}
+.course-price{font-size:15px;font-weight:800;color:var(--teal);}
+.course-enroll-btn{
+  background:var(--teal);color:#fff;font-size:12px;font-weight:700;
+  padding:7px 16px;border-radius:8px;border:none;cursor:pointer;
+  transition:background 0.2s,transform 0.15s;
+}
+.course-enroll-btn:hover{background:var(--teal3);transform:scale(1.04);}
+.course-card-rating{font-size:12px;color:var(--yellow);}
+
+/* ============================================================
+   TESTIMONIALS
+   ============================================================ */
+.testimonials-section{text-align:center;}
+.testimonial-track{overflow:hidden;position:relative;margin-bottom:24px;}
+.testimonial-slider{
+  display:flex;gap:20px;
+  animation:slide 20s linear infinite;
+  width:max-content;
+}
+.testimonial-slider:hover{animation-play-state:paused;}
+@keyframes slide{from{transform:translateX(0);}to{transform:translateX(-50%);}};
+.testimonial-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:16px;
+  padding:24px;width:300px;text-align:left;flex-shrink:0;
+  transition:border-color 0.3s;
+}
+.testimonial-card:hover{border-color:rgba(20,184,166,0.3);}
+.testimonial-stars{color:var(--yellow);font-size:14px;margin-bottom:10px;}
+.testimonial-text{font-size:13px;color:var(--text-secondary,#a8b3c4);line-height:1.7;margin-bottom:14px;font-style:italic;}
+.testimonial-author{display:flex;align-items:center;gap:10px;}
+.author-avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#fff;flex-shrink:0;}
+.author-name{font-size:13px;font-weight:700;color:var(--white);}
+.author-role{font-size:11px;color:var(--muted);}
+.testimonial-dots{display:flex;gap:8px;justify-content:center;}
+.t-dot{width:8px;height:8px;border-radius:50%;background:var(--border);transition:background 0.3s,width 0.3s;}
+.t-dot.active{background:var(--teal);width:24px;border-radius:4px;}
+
+/* ============================================================
+   FEATURES — icon grid
+   ============================================================ */
+.features-section{}
+.features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+.feature-item{
+  background:var(--surface);border:1px solid var(--border);border-radius:14px;
+  padding:22px;
+  transition:border-color 0.3s,transform 0.3s;
+  position:relative;overflow:hidden;
+}
+.feature-item::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--teal),transparent);
+  transform:scaleX(0);transition:transform 0.4s;
+}
+.feature-item:hover{border-color:rgba(20,184,166,0.3);transform:translateY(-3px);}
+.feature-item:hover::before{transform:scaleX(1);}
+.feature-icon-wrap{
+  width:46px;height:46px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;font-size:22px;
+  margin-bottom:14px;
+}
+.fi1{background:rgba(20,184,166,0.1);}
+.fi2{background:rgba(251,191,36,0.1);}
+.fi3{background:rgba(74,222,128,0.1);}
+.fi4{background:rgba(249,115,22,0.1);}
+.fi5{background:rgba(139,92,246,0.1);}
+.fi6{background:rgba(56,189,248,0.1);}
+.feature-title{font-size:14px;font-weight:700;color:var(--white);margin-bottom:6px;}
+.feature-desc{font-size:13px;color:var(--muted);line-height:1.6;}
+
+/* ============================================================
+   CTA SECTION
+   ============================================================ */
+.cta-section{
+  text-align:center;padding:100px 5%;
+  position:relative;overflow:hidden;
+}
+.cta-bg{
+  position:absolute;inset:0;
+  background:radial-gradient(ellipse 70% 60% at 50% 50%,rgba(20,184,166,0.1),transparent 70%);
+  animation:ctaPulse 4s ease-in-out infinite;
+}
+@keyframes ctaPulse{0%,100%{opacity:0.5;}50%{opacity:1;}}
+.cta-content{position:relative;z-index:1;}
+.cta-title{font-size:clamp(1.8rem,4vw,3rem);font-weight:900;color:var(--white);margin-bottom:14px;line-height:1.2;}
+.cta-sub{font-size:16px;color:var(--muted);margin-bottom:36px;max-width:480px;margin-left:auto;margin-right:auto;}
+.cta-btn-wrap{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;}
+.btn-cta{
+  background:linear-gradient(135deg,var(--teal),var(--teal3));
+  color:#fff;font-size:16px;font-weight:800;
+  padding:16px 40px;border-radius:14px;display:inline-flex;align-items:center;gap:8px;
+  transition:transform 0.2s,box-shadow 0.2s;
+  box-shadow:0 6px 24px rgba(20,184,166,0.35);
+  animation:ctaBtnPulse 3s ease-in-out infinite;
+}
+@keyframes ctaBtnPulse{0%,100%{box-shadow:0 6px 24px rgba(20,184,166,0.35);}50%{box-shadow:0 6px 40px rgba(20,184,166,0.55);}}
+.btn-cta:hover{transform:translateY(-3px) scale(1.02);color:#fff;}
+
+/* Confetti particles on CTA click */
+.confetti-piece{
+  position:fixed;width:8px;height:8px;border-radius:2px;
+  pointer-events:none;z-index:9999;
+  animation:confettiFall 1.2s ease-in forwards;
+}
+@keyframes confettiFall{
+  0%{opacity:1;transform:translateY(0) rotate(0deg) scale(1);}
+  100%{opacity:0;transform:translateY(400px) rotate(720deg) scale(0.3);}
+}
+
+/* ============================================================
+   PENYEDIA / INSTRUCTOR STRIP
+   ============================================================ */
+.instructor-strip{
+  background:linear-gradient(135deg,#1a0f00,#2d1f03);
+  border:1px solid rgba(251,191,36,0.2);border-radius:20px;
+  padding:32px 40px;display:flex;align-items:center;justify-content:space-between;
+  max-width:900px;margin:0 auto 60px;gap:24px;flex-wrap:wrap;
+}
+.instructor-strip-left .tag{font-size:11px;font-weight:700;color:var(--yellow);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:6px;}
+.instructor-strip-left h3{font-size:1.3rem;font-weight:800;color:var(--white);margin-bottom:6px;}
+.instructor-strip-left p{font-size:13px;color:var(--muted);}
+.btn-instructor{
+  background:var(--yellow);color:#1a0f00;font-size:14px;font-weight:800;
+  padding:12px 28px;border-radius:10px;white-space:nowrap;
+  transition:transform 0.2s,box-shadow 0.2s;
+  display:inline-block;
+}
+.btn-instructor:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(251,191,36,0.3);color:#1a0f00;}
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+.site-footer{
+  border-top:1px solid var(--border);padding:40px 5%;
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;
+  max-width:1200px;margin:0 auto;
+}
+.footer-logo-wrap{display:flex;align-items:center;gap:0;}
+.footer-links{display:flex;gap:20px;flex-wrap:wrap;}
+.footer-links a{font-size:13px;color:var(--muted);}
+.footer-links a:hover{color:var(--teal);}
+.footer-copy{font-size:12px;color:var(--muted);}
+
+/* ============================================================
+   KEYFRAMES MISC
+   ============================================================ */
+@keyframes fadeSlideDown{from{opacity:0;transform:translateY(-16px);}to{opacity:1;transform:translateY(0);}}
+@keyframes fadeSlideUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media(max-width:768px){
+  .steps-grid{grid-template-columns:repeat(2,1fr);}
+  .stats-grid{grid-template-columns:repeat(2,1fr);}
+  .stat-item:nth-child(2){border-right:none;}
+  .stat-item:nth-child(3){border-right:1px solid var(--border);}
+  .stat-item:nth-child(3),.stat-item:nth-child(4){border-top:1px solid var(--border);}
+  .courses-grid{grid-template-columns:1fr;}
+  .features-grid{grid-template-columns:1fr 1fr;}
+  .navbar-links{display:none;}
+  .instructor-strip{flex-direction:column;}
+  .site-footer{flex-direction:column;text-align:center;}
+  .footer-links{justify-content:center;}
+}
+@media(max-width:480px){
+  .steps-grid{grid-template-columns:1fr;}
+  .features-grid{grid-template-columns:1fr;}
+  .stats-grid{grid-template-columns:1fr 1fr;}
+  .hero-actions{flex-direction:column;align-items:center;}
+  .btn-hero-primary,.btn-hero-secondary{width:100%;justify-content:center;}
+}
+</style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar" id="navbar">
+  <div class="navbar-logo" id="nav-logo-wrap"></div>
+  <div class="navbar-links">
+    <a href="kursus.html">Kursus</a>
+    <a href="#cara-belajar">Cara Belajar</a>
+    <a href="#testimoni">Testimoni</a>
+    <a href="tentang.html">Tentang Kami</a>
+    <a href="instructor.html" style="color:var(--yellow);">Jadi Penyedia</a>
+  </div>
+  <a href="daftar.html" class="navbar-cta">Daftar Percuma →</a>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+  <div class="orb orb3"></div>
+  <div class="hero-grid"></div>
+  <canvas id="particles"></canvas>
+
+  <div class="hero-content">
+    <div class="hero-badge">
+      <span class="hero-badge-dot"></span>
+      Pembelajaran Sepanjang Hayat &bull; KKBM
+    </div>
+
+    <h1 class="hero-h1">
+      <span class="line">Belajar Tanpa Sempadan,</span>
+      <span class="line highlight" id="typewriterEl">Grow Without Limits.</span>
+    </h1>
+
+    <p class="hero-sub">
+      Platform PSH Kolej Komuniti Bukit Mertajam. Daftar, belajar, dan dapatkan sijil rasmi &mdash;
+      <span id="heroTypewriter" class="typewriter"></span>
+    </p>
+
+    <div class="hero-actions">
+      <a href="daftar.html" class="btn-hero-primary" onclick="launchConfetti(event)">
+        🚀 Mulakan Sekarang &mdash; Percuma
+      </a>
+      <a href="kursus.html" class="btn-hero-secondary">
+        📚 Terokai 48 Kursus
+      </a>
+    </div>
+
+    <div class="hero-stats">
+      <div class="hero-stat"><div class="hero-stat-num" data-count="1247">0</div><div class="hero-stat-label">Pelajar Berdaftar</div></div>
+      <div class="hero-stat"><div class="hero-stat-num" data-count="48">0</div><div class="hero-stat-label">Kursus Aktif</div></div>
+      <div class="hero-stat"><div class="hero-stat-num" data-count="863">0</div><div class="hero-stat-label">Sijil Dikeluarkan</div></div>
+      <div class="hero-stat"><div class="hero-stat-num" data-count="100">0</div><div class="hero-stat-label">% Online + F2F</div></div>
+    </div>
+  </div>
+
+  <div class="scroll-indicator">
+    <span>Terokai</span>
+    <div class="scroll-arrow"></div>
+  </div>
+</section>
+
+<!-- Video Showcase -->
+<section class="video-section section-wrap" style="padding:60px 5%;">
+  <div style="max-width:900px;margin:0 auto;">
+    <div class="reveal" style="text-align:center;margin-bottom:36px;">
+      <div class="section-label">Platform Showcase</div>
+      <div class="section-title">Lihat Bagaimana Platform Ini Berfungsi</div>
+      <div class="section-sub" style="margin:0 auto;">Tutorial lengkap cara daftar, pilih kursus, belajar, dan dapatkan sijil dalam masa kurang 5 minit.</div>
+    </div>
+    <div class="video-showcase reveal delay-2">
+      <div class="video-thumbnail">
+        <div class="video-thumbnail-inner">
+          <div class="play-btn" onclick="playVideo(this)" role="button" tabindex="0" aria-label="Play video tutorial">▶</div>
+          <div class="video-thumbnail-title">Tutorial KomunitiKu @ KKBM</div>
+          <div class="video-thumbnail-sub">Cara Daftar → Belajar → Dapat Sijil &bull; 4:32 minit</div>
+        </div>
+      </div>
+      <div class="video-bar">
+        <div class="video-bar-item">🎬 <strong>Video Tutorial</strong></div>
+        <div class="video-bar-item">⏱️ <strong>4:32</strong> minit</div>
+        <div class="video-bar-item">👁️ <strong>2,341</strong> tontonan</div>
+        <div class="video-bar-item">⭐ <strong>4.9</strong> / 5.0</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- How It Works -->
+<section id="cara-belajar" class="steps-section">
+  <div class="section-wrap">
+    <div class="reveal" style="text-align:center;margin-bottom:40px;">
+      <div class="section-label">Cara Ia Berfungsi</div>
+      <div class="section-title">4 Langkah Mudah untuk Bermula</div>
+    </div>
+    <div class="steps-grid">
+      <div class="step-card reveal delay-1">
+        <div class="step-icon">📝</div>
+        <div class="step-num">Langkah 01</div>
+        <div class="step-title">Daftar Percuma</div>
+        <div class="step-desc">Buat akaun dalam masa 2 minit menggunakan emel anda sahaja.</div>
+      </div>
+      <div class="step-card reveal delay-2">
+        <div class="step-icon">📚</div>
+        <div class="step-num">Langkah 02</div>
+        <div class="step-title">Pilih Kursus</div>
+        <div class="step-desc">Pilih dari 48 kursus percuma atau berbayar mengikut minat anda.</div>
+      </div>
+      <div class="step-card reveal delay-3">
+        <div class="step-icon">🎓</div>
+        <div class="step-num">Langkah 03</div>
+        <div class="step-title">Belajar Ikut Rentak</div>
+        <div class="step-desc">Akses modul, video, dan bahan pembelajaran bila-bila masa.</div>
+      </div>
+      <div class="step-card reveal delay-4">
+        <div class="step-icon">🏆</div>
+        <div class="step-num">Langkah 04</div>
+        <div class="step-title">Dapat Sijil Rasmi</div>
+        <div class="step-desc">Selesaikan kursus dan terima sijil KKBM secara automatik.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Animated Stats -->
+<div class="stats-section">
+  <div class="stats-grid">
+    <div class="stat-item reveal delay-1">
+      <div class="stat-number c1" data-count="1247" data-suffix="+">0</div>
+      <div class="stat-desc">Pelajar Aktif</div>
+      <div class="stat-trend">▲ +23 minggu ini</div>
+    </div>
+    <div class="stat-item reveal delay-2">
+      <div class="stat-number c2" data-count="48" data-suffix="">0</div>
+      <div class="stat-desc">Kursus Tersedia</div>
+      <div class="stat-trend" style="color:var(--yellow);">F2F + Online</div>
+    </div>
+    <div class="stat-item reveal delay-3">
+      <div class="stat-number c3" data-count="863" data-suffix="+">0</div>
+      <div class="stat-desc">Sijil Dikeluarkan</div>
+      <div class="stat-trend">▲ +41 bulan ini</div>
+    </div>
+    <div class="stat-item reveal delay-4">
+      <div class="stat-number c4" data-count="4" data-suffix=".8★">0</div>
+      <div class="stat-desc">Rating Platform</div>
+      <div class="stat-trend" style="color:var(--orange);">Daripada 580 ulasan</div>
+    </div>
+  </div>
+</div>
+
+<!-- Course Cards -->
+<section class="courses-section">
+  <div class="section-wrap">
+    <div class="reveal" style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:36px;flex-wrap:wrap;gap:12px;">
+      <div>
+        <div class="section-label">Kursus Pilihan</div>
+        <div class="section-title" style="margin-bottom:0;">Mula Belajar Hari Ini</div>
+      </div>
+      <a href="kursus.html" style="font-size:14px;color:var(--teal);font-weight:600;">Lihat semua 48 kursus →</a>
+    </div>
+    <div class="courses-grid">
+      <div class="course-card-3d reveal delay-1" onclick="window.location='kursus-detail.html?id=1'">
+        <div class="course-card-inner">
+          <div class="course-thumb-3d ct1">💻</div>
+          <div class="course-card-body">
+            <div class="course-badges-row"><span class="course-badge cb-free">Percuma</span><span class="course-badge cb-online">Online</span></div>
+            <div class="course-card-title">Asas Literasi Digital</div>
+            <div class="course-card-meta">6 Modul &bull; 4 Minggu &bull; 234 pelajar</div>
+            <div class="course-card-rating">★★★★★ <span style="color:var(--muted);">4.8 (198 ulasan)</span></div>
+            <div class="course-card-footer">
+              <span class="course-price">PERCUMA</span>
+              <button class="course-enroll-btn">Daftar →</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="course-card-3d reveal delay-2" onclick="window.location='kursus-detail.html?id=2'">
+        <div class="course-card-inner">
+          <div class="course-thumb-3d ct2">📊</div>
+          <div class="course-card-body">
+            <div class="course-badges-row"><span class="course-badge cb-paid">Berbayar</span><span class="course-badge cb-f2f">Bersemuka</span></div>
+            <div class="course-card-title">Microsoft Excel Intermediate</div>
+            <div class="course-card-meta">8 Modul &bull; 6 Minggu &bull; 87 pelajar</div>
+            <div class="course-card-rating">★★★★★ <span style="color:var(--muted);">4.7 (54 ulasan)</span></div>
+            <div class="course-card-footer">
+              <span class="course-price">RM 80</span>
+              <button class="course-enroll-btn">Daftar →</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="course-card-3d reveal delay-3" onclick="window.location='kursus-detail.html?id=5'">
+        <div class="course-card-inner">
+          <div class="course-thumb-3d ct5">📱</div>
+          <div class="course-card-body">
+            <div class="course-badges-row"><span class="course-badge cb-free">Percuma</span><span class="course-badge cb-online">Online</span></div>
+            <div class="course-card-title">Pengurusan Media Sosial</div>
+            <div class="course-card-meta">4 Modul &bull; 2 Minggu &bull; 445 pelajar</div>
+            <div class="course-card-rating">★★★★★ <span style="color:var(--muted);">4.8 (401 ulasan)</span></div>
+            <div class="course-card-footer">
+              <span class="course-price">PERCUMA</span>
+              <button class="course-enroll-btn">Daftar →</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Features -->
+<section class="features-section" style="background:linear-gradient(180deg,var(--bg),#0a0f1a);">
+  <div class="section-wrap">
+    <div class="reveal" style="text-align:center;margin-bottom:40px;">
+      <div class="section-label">Kenapa KomunitiKu?</div>
+      <div class="section-title">Direka untuk Komuniti, Dikuasakan oleh AI</div>
+    </div>
+    <div class="features-grid">
+      <div class="feature-item reveal delay-1">
+        <div class="feature-icon-wrap fi1">🎓</div>
+        <div class="feature-title">Sijil Rasmi KKBM</div>
+        <div class="feature-desc">Setiap kursus disertakan sijil rasmi yang diiktiraf daripada Kolej Komuniti Bukit Mertajam.</div>
+      </div>
+      <div class="feature-item reveal delay-2">
+        <div class="feature-icon-wrap fi2">⚡</div>
+        <div class="feature-title">Belajar Ikut Rentak Sendiri</div>
+        <div class="feature-desc">Tiada deadline. Akses kandungan bila-bila masa, di mana sahaja, mengikut jadual anda.</div>
+      </div>
+      <div class="feature-item reveal delay-3">
+        <div class="feature-icon-wrap fi3">🤖</div>
+        <div class="feature-title">AI Helpdesk 24/7</div>
+        <div class="feature-desc">Chatbot AI sedia membantu menjawab soalan anda tentang kursus, sijil dan platform.</div>
+      </div>
+      <div class="feature-item reveal delay-4">
+        <div class="feature-icon-wrap fi4">🏫</div>
+        <div class="feature-title">F2F + Online</div>
+        <div class="feature-desc">Fleksibel — hadir kelas fizikal atau belajar dari rumah, pilih mod yang sesuai.</div>
+      </div>
+      <div class="feature-item reveal delay-5">
+        <div class="feature-icon-wrap fi5">💰</div>
+        <div class="feature-title">Percuma &amp; Berbayar</div>
+        <div class="feature-desc">Mula dengan kursus percuma. Tingkatkan kemahiran dengan kursus premium yang berbaloi.</div>
+      </div>
+      <div class="feature-item reveal delay-6">
+        <div class="feature-icon-wrap fi6">📊</div>
+        <div class="feature-title">Track Kemajuan</div>
+        <div class="feature-desc">Dashboard peribadi untuk semak progress kursus, sijil, dan pencapaian anda.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Testimonials -->
+<section id="testimoni" class="testimonials-section">
+  <div class="reveal" style="margin-bottom:40px;">
+    <div class="section-label">Testimoni</div>
+    <div class="section-title">Apa Kata Komuniti Kami</div>
+  </div>
+  <div class="testimonial-track reveal delay-1">
+    <div class="testimonial-slider" id="testimonialSlider"></div>
+  </div>
+  <div class="testimonial-dots">
+    <div class="t-dot active"></div>
+    <div class="t-dot"></div>
+    <div class="t-dot"></div>
+  </div>
+</section>
+
+<!-- Instructor Strip -->
+<section style="padding:40px 5% 60px;">
+  <div class="instructor-strip reveal">
+    <div class="instructor-strip-left">
+      <div class="tag">✏️ Untuk Penyedia Kursus</div>
+      <h3>Jadi Penyedia Kursus KKBM</h3>
+      <p>Bina dan terbitkan kursus anda dengan bantuan AI — jana nota, multimedia, dan penilaian secara automatik.</p>
+    </div>
+    <a href="instructor.html" class="btn-instructor">Buka Instructor Studio →</a>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="cta-bg"></div>
+  <div class="cta-content reveal">
+    <div class="section-label">Sedia untuk Bermula?</div>
+    <div class="cta-title">Sertai 1,247+ Komuniti<br/>yang Telah Bermula</div>
+    <div class="cta-sub">Daftar percuma hari ini. Tiada had masa, tiada kad kredit diperlukan.</div>
+    <div class="cta-btn-wrap">
+      <a href="daftar.html" class="btn-cta" onclick="launchConfetti(event)">🎉 Daftar Percuma Sekarang</a>
+      <a href="login.html" class="btn-hero-secondary" style="font-size:15px;padding:15px 30px;">Sudah ada akaun?</a>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer style="padding:32px 5% 24px;border-top:1px solid var(--border);">
+  <div style="max-width:900px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;">
+    <div id="footer-logo-wrap"></div>
+    <div style="display:flex;gap:20px;flex-wrap:wrap;">
+      <a href="kursus.html" style="font-size:13px;color:var(--muted);">Kursus</a>
+      <a href="sijil.html" style="font-size:13px;color:var(--muted);">Sijil</a>
+      <a href="tentang.html" style="font-size:13px;color:var(--muted);">Tentang</a>
+      <a href="instructor.html" style="font-size:13px;color:var(--yellow);">Penyedia Kursus</a>
+      <a href="dashboard-admin.html" style="font-size:13px;color:var(--muted);">Admin</a>
+    </div>
+    <div style="font-size:12px;color:var(--muted);">&copy; 2025 KomunitiKu @ KKBM</div>
+  </div>
+</footer>
+
+<!-- Load order matters: logo → nav → ui -->
+<script src="logo.js"></script>
+<script>
+/* Insert logos */
+document.getElementById('nav-logo-wrap').innerHTML =
+  '<a href="index.html" style="display:flex;align-items:center;text-decoration:none;">' +
+  (window.LOGO_SVG ? LOGO_SVG.full(32) : '<span style="font-size:18px;font-weight:900;color:#fff;">KomunitiKu</span>') +
+  '</a>';
+document.getElementById('footer-logo-wrap').innerHTML =
+  window.LOGO_SVG ? LOGO_SVG.full(28) : '';
+</script>
+<script>
+/* ── Navbar scroll effect ── */
+window.addEventListener('scroll', function(){
+  document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 40);
+}, {passive:true});
+
+/* ── Canvas particles ── */
+(function(){
+  var canvas = document.getElementById('particles');
+  var ctx = canvas.getContext('2d');
+  var W, H, particles = [];
+  function resize(){
+    W = canvas.width = canvas.offsetWidth;
+    H = canvas.height = canvas.offsetHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  function Particle(){
+    this.x = Math.random()*W;
+    this.y = Math.random()*H;
+    this.r = Math.random()*1.5+0.5;
+    this.vx = (Math.random()-0.5)*0.3;
+    this.vy = (Math.random()-0.5)*0.3;
+    this.alpha = Math.random()*0.5+0.1;
+    this.color = ['#14b8a6','#8b5cf6','#f97316','#38bdf8'][Math.floor(Math.random()*4)];
+  }
+  Particle.prototype.update = function(){
+    this.x += this.vx; this.y += this.vy;
+    if(this.x<0)this.x=W; if(this.x>W)this.x=0;
+    if(this.y<0)this.y=H; if(this.y>H)this.y=0;
+  };
+
+  for(var i=0;i<80;i++) particles.push(new Particle());
+
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    particles.forEach(function(p){
+      p.update();
+      ctx.beginPath();
+      ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle = p.color;
+      ctx.globalAlpha = p.alpha;
+      ctx.fill();
+    });
+    /* Draw connecting lines */
+    ctx.globalAlpha = 1;
+    for(var i=0;i<particles.length;i++){
+      for(var j=i+1;j<particles.length;j++){
+        var dx=particles[i].x-particles[j].x, dy=particles[i].y-particles[j].y;
+        var dist=Math.sqrt(dx*dx+dy*dy);
+        if(dist<100){
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x,particles[i].y);
+          ctx.lineTo(particles[j].x,particles[j].y);
+          ctx.strokeStyle='rgba(20,184,166,'+(0.04*(1-dist/100))+')';
+          ctx.lineWidth=0.5;
+          ctx.stroke();
+        }
+      }
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+/* ── Typewriter hero sub ── */
+(function(){
+  var phrases = ['percuma atau berbayar.','F2F atau Online.','ikut rentak anda sendiri.','dengan sijil rasmi KKBM.'];
+  var el = document.getElementById('heroTypewriter');
+  var pi = 0, ci = 0, deleting = false;
+  function tick(){
+    var phrase = phrases[pi];
+    if(!deleting){ el.textContent = phrase.slice(0,++ci); if(ci===phrase.length){ deleting=true; setTimeout(tick,1800); return; }}
+    else{ el.textContent = phrase.slice(0,--ci); if(ci===0){ deleting=false; pi=(pi+1)%phrases.length; }}
+    setTimeout(tick, deleting?40:80);
+  }
+  setTimeout(tick, 1500);
+})();
+
+/* ── Counter animation ── */
+function animateCounter(el, target, suffix, duration){
+  suffix = suffix || '';
+  var start = 0, step = target/60;
+  var timer = setInterval(function(){
+    start = Math.min(start+step, target);
+    el.textContent = Math.floor(start).toLocaleString() + suffix;
+    if(start >= target) clearInterval(timer);
+  }, duration/60);
+}
+
+/* ── Scroll reveal ── */
+var observer = new IntersectionObserver(function(entries){
+  entries.forEach(function(e){
+    if(e.isIntersecting){
+      e.target.classList.add('visible');
+      /* Counter animation */
+      var countEl = e.target.querySelector('[data-count]') || (e.target.dataset.count ? e.target : null);
+      if(countEl && countEl.dataset.count){
+        animateCounter(countEl, parseInt(countEl.dataset.count), countEl.dataset.suffix||'', 1400);
+      }
+      /* Hero stats */
+      if(e.target.classList.contains('hero-stats-trigger')){
+        e.target.querySelectorAll('[data-count]').forEach(function(c){
+          animateCounter(c, parseInt(c.dataset.count), '+', 1400);
+        });
+      }
+    }
+  });
+}, {threshold:0.15});
+
+document.querySelectorAll('.reveal,.reveal-left,.reveal-right,.reveal-scale').forEach(function(el){ observer.observe(el); });
+/* Also observe stat numbers */
+document.querySelectorAll('[data-count]').forEach(function(el){
+  observer.observe(el.closest('.stat-item, .hero-stat') || el);
+});
+
+/* ── Hero stats counter on load ── */
+setTimeout(function(){
+  document.querySelectorAll('.hero-stat-num[data-count]').forEach(function(el){
+    animateCounter(el, parseInt(el.dataset.count), '+', 1800);
+  });
+},800);
+
+/* ── Video play simulation ── */
+window.playVideo = function(btn){
+  var thumb = btn.closest('.video-thumbnail');
+  thumb.innerHTML =
+    '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#0d1117;flex-direction:column;gap:12px;">' +
+      '<div style="width:64px;height:64px;border:3px solid var(--teal);border-top-color:transparent;border-radius:50%;animation:spin 0.8s linear infinite;"></div>' +
+      '<div style="font-size:13px;color:var(--muted);">Memuatkan video... (Demo Mode)</div>' +
+    '</div>';
+  setTimeout(function(){
+    thumb.innerHTML =
+      '<div style="width:100%;height:100%;background:#000;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;">' +
+        '<div style="font-size:4rem;">🎬</div>' +
+        '<div style="font-size:14px;font-weight:700;color:#fff;">Tutorial KomunitiKu @ KKBM</div>' +
+        '<div style="font-size:12px;color:#8b949e;">Video akan diintegrasikan dengan YouTube/Vimeo pada versi production.</div>' +
+        '<div style="display:flex;gap:8px;margin-top:8px;">' +
+          '<div style="background:#14b8a6;color:#fff;font-size:12px;padding:6px 14px;border-radius:8px;font-weight:700;">▶ 0:00 / 4:32</div>' +
+          '<div style="background:rgba(255,255,255,0.1);color:#fff;font-size:12px;padding:6px 14px;border-radius:8px;">⏸</div>' +
+        '</div>' +
+      '</div>';
+  }, 1500);
+};
+
+/* ── Testimonials ── */
+var tData = [
+  {name:'Nor Azila Binti Hamid',role:'Ibu Rumah Tangga, Butterworth',avatar:'NA',color:'#134e4a',text:'"Saya berjaya belajar Excel dari rumah sambil jaga anak. Sijil KKBM sangat bernilai untuk resume saya!"',stars:5},
+  {name:'Ahmad Faris Razali',role:'Usahawan Muda, Bukit Mertajam',avatar:'AF',color:'#1e3a5f',text:'"Kursus e-Dagang banyak tolong perniagaan saya. Income naik 40% selepas apply teknik yang diajar!"',stars:5},
+  {name:'Siti Hajar Mohamad',role:'Guru Sekolah, Kepala Batas',avatar:'SH',color:'#4a1942',text:'"Platform ini sangat mudah digunakan. AI Helpdesk sangat membantu bila ada soalan!"',stars:5},
+  {name:'Mohd Izzat Zakaria',role:'Pekerja Kilang, Nibong Tebal',avatar:'MI',color:'#451a03',text:'"Belajar lepas balik kerja pukul 10 malam pun boleh. Sangat fleksibel dan berbaloi!"',stars:5},
+  {name:'Zulaikha Othman',role:'Pelajar Universiti, Penang',avatar:'ZO',color:'#1a3a1a',text:'"Kursus grafik percuma dengan sijil? Tak sangka ada platform sebagus ini di KKBM!"',stars:5},
+  {name:'Hafizuddin Aziz',role:'Kakitangan Kerajaan, BM',avatar:'HA',color:'#3a2a1a',text:'"Program F2F sangat interaktif. Pensyarah berpengalaman dan bahan pembelajaran terkini."',stars:5},
+];
+
+var sliderEl = document.getElementById('testimonialSlider');
+var allCards = tData.concat(tData); /* duplicate for infinite loop */
+sliderEl.innerHTML = allCards.map(function(t){
+  return '<div class="testimonial-card">' +
+    '<div class="testimonial-stars">' + '★'.repeat(t.stars) + '</div>' +
+    '<div class="testimonial-text">' + t.text + '</div>' +
+    '<div class="testimonial-author">' +
+      '<div class="author-avatar" style="background:'+t.color+';">'+t.avatar+'</div>' +
+      '<div><div class="author-name">'+t.name+'</div><div class="author-role">'+t.role+'</div></div>' +
+    '</div>' +
+  '</div>';
+}).join('');
+
+/* ── Confetti on CTA ── */
+window.launchConfetti = function(e){
+  var colors = ['#14b8a6','#f97316','#8b5cf6','#fbbf24','#4ade80','#38bdf8'];
+  for(var i=0;i<60;i++){
+    var piece = document.createElement('div');
+    piece.className = 'confetti-piece';
+    piece.style.cssText =
+      'left:'+e.clientX+'px;top:'+e.clientY+'px;' +
+      'background:'+colors[Math.floor(Math.random()*colors.length)]+';' +
+      'animation-duration:'+(0.8+Math.random()*0.8)+'s;' +
+      'animation-delay:'+(Math.random()*0.3)+'s;' +
+      'transform:translate('+(Math.random()*200-100)+'px,'+(Math.random()*-100-50)+'px);';
+    document.body.appendChild(piece);
+    setTimeout(function(p){ p.remove(); }, 2000, piece);
+  }
+};
+</script>
+<script src="ui.js"></script>
+</body>
+</html>

@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Cart &mdash; KomunitiKu @ KKBM</title>
+<link rel="stylesheet" href="nav.css"/>
+<link rel="stylesheet" href="design.css"/>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  :root{--bg:#0d1117;--surface:#161b22;--border:#2d3748;--teal:#14b8a6;--teal-light:#2dd4bf;--teal-dim:#0d9488;--text:#e2e8f0;--muted:#8b949e;--white:#fff;--yellow:#fbbf24;--red:#f87171;}
+  body{font-family:-apple-system,"Segoe UI",system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;font-size:15px;}
+  a{color:var(--teal);text-decoration:none;}
+  .wrap{max-width:760px;margin:0 auto;padding:40px 2rem 60px;}
+  .page-title{font-size:1.8rem;font-weight:800;color:var(--white);margin-bottom:6px;}
+  .page-sub{font-size:14px;color:var(--muted);margin-bottom:32px;}
+  .layout{display:grid;grid-template-columns:1fr 300px;gap:20px;align-items:start;}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:22px;}
+  .card h2{font-size:15px;font-weight:700;color:var(--white);margin-bottom:16px;}
+  .cart-item{display:flex;align-items:center;gap:14px;padding:14px;background:#0d1117;border:1px solid var(--border);border-radius:10px;margin-bottom:10px;}
+  .cart-thumb{width:52px;height:52px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+  .t1{background:#134e4a;}.t2{background:#1e3a5f;}.t3{background:#4a1942;}.t4{background:#451a03;}.t5{background:#1a3a1a;}.t6{background:#3a2a1a;}
+  .cart-info{flex:1;}
+  .cart-name{font-size:14px;font-weight:700;color:var(--white);margin-bottom:2px;}
+  .cart-meta{font-size:12px;color:var(--muted);}
+  .cart-price{font-size:14px;font-weight:700;color:var(--teal);white-space:nowrap;}
+  .cart-remove{background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:4px;border-radius:6px;transition:color 0.2s;}
+  .cart-remove:hover{color:var(--red);}
+  .summary-row{display:flex;justify-content:space-between;font-size:14px;padding:10px 0;border-bottom:1px solid var(--border);}
+  .summary-row:last-of-type{border-bottom:none;}
+  .summary-total{display:flex;justify-content:space-between;font-size:16px;font-weight:800;color:var(--white);padding:14px 0 0;}
+  .btn{width:100%;background:var(--teal);color:#fff;font-weight:700;font-size:15px;padding:13px;border-radius:10px;border:none;cursor:pointer;transition:background 0.2s;margin-top:14px;}
+  .btn:hover{background:var(--teal-dim);}
+  .btn-sec{width:100%;background:transparent;border:1px solid var(--border);color:var(--text);font-weight:600;font-size:14px;padding:11px;border-radius:10px;cursor:pointer;margin-top:8px;transition:border-color 0.2s;}
+  .btn-sec:hover{border-color:var(--teal);color:var(--teal);}
+  .empty-cart{text-align:center;padding:60px 20px;color:var(--muted);}
+  .empty-cart a{color:var(--teal);}
+  .badge{font-size:10px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;padding:2px 8px;border-radius:999px;}
+  .badge-free{background:#0d2926;color:var(--teal-light);}
+  .badge-paid{background:#2d1f03;color:var(--yellow);}
+  /* checkout modal */
+  .modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:500;align-items:center;justify-content:center;}
+  .modal-bg.open{display:flex;}
+  .modal{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:36px;max-width:400px;width:90%;text-align:center;}
+  .modal h2{font-size:1.3rem;font-weight:800;color:var(--white);margin-bottom:10px;}
+  .modal p{font-size:14px;color:var(--muted);margin-bottom:24px;}
+  .modal-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+  .modal-btn{background:var(--teal);color:#fff;font-weight:700;padding:10px 24px;border-radius:10px;border:none;cursor:pointer;}
+  .modal-btn-sec{background:transparent;border:1px solid var(--border);color:var(--text);font-weight:600;padding:10px 24px;border-radius:10px;cursor:pointer;}
+  .success-icon{font-size:3rem;margin-bottom:12px;}
+  footer{border-top:1px solid var(--border);padding:24px 2rem;text-align:center;color:var(--muted);font-size:12px;max-width:760px;margin:0 auto;}
+  @media(max-width:640px){.layout{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<nav id="main-nav"></nav>
+
+<div class="wrap">
+  <div class="page-title">&#128722; Cart Saya</div>
+  <div class="page-sub">Semak kursus pilihan anda sebelum mendaftar.</div>
+  <div id="mainContent"></div>
+</div>
+
+<!-- Checkout Modal -->
+<div class="modal-bg" id="checkoutModal">
+  <div class="modal" id="modalBody"></div>
+</div>
+
+<footer>&copy; 2025 KomunitiKu @ KKBM &middot; <a href="kursus.html">Terus Melayari Kursus</a></footer>
+
+<script>
+var allKursus = [
+  {id:1,icon:'💻',bg:'t1',title:'Asas Literasi Digital',meta:'Online · 6 Modul',type:'percuma',harga:0,price:'PERCUMA'},
+  {id:2,icon:'📊',bg:'t2',title:'Microsoft Excel Intermediate',meta:'F2F · 8 Modul',type:'berbayar',harga:80,price:'RM 80'},
+  {id:3,icon:'🎨',bg:'t3',title:'Reka Bentuk Grafik Asas',meta:'Online · 5 Modul',type:'percuma',harga:0,price:'PERCUMA'},
+  {id:4,icon:'🛒',bg:'t4',title:'e-Dagang untuk Usahawan',meta:'F2F · 10 Modul',type:'berbayar',harga:120,price:'RM 120'},
+  {id:5,icon:'📱',bg:'t5',title:'Pengurusan Media Sosial',meta:'Online · 4 Modul',type:'percuma',harga:0,price:'PERCUMA'},
+  {id:6,icon:'🍳',bg:'t6',title:'Keusahawanan Makanan & Minuman',meta:'F2F · 6 Modul',type:'berbayar',harga:60,price:'RM 60'}
+];
+
+function getCart() { return JSON.parse(localStorage.getItem('kkbm_cart') || '[]'); }
+function saveCart(c) { localStorage.setItem('kkbm_cart', JSON.stringify(c)); }
+
+function removeItem(id) {
+  var cart = getCart().filter(function(x){ return x !== id; });
+  saveCart(cart); render();
+}
+
+function render() {
+  var cart = getCart();
+  var mc = document.getElementById('mainContent');
+  if (!cart.length) {
+    mc.innerHTML = '<div class="empty-cart">&#128722;<br/><br/>Cart anda kosong.<br/><br/><a href="kursus.html">Terokai kursus &rarr;</a></div>';
+    return;
+  }
+  var items = cart.map(function(id){ return allKursus.find(function(k){return k.id===id;}); }).filter(Boolean);
+  var subtotal = items.reduce(function(s,k){ return s+k.harga; }, 0);
+  var freeCount = items.filter(function(k){return k.harga===0;}).length;
+  var paidCount = items.length - freeCount;
+
+  var itemsHtml = items.map(function(k){
+    return '<div class="cart-item">' +
+      '<div class="cart-thumb '+k.bg+'">'+k.icon+'</div>' +
+      '<div class="cart-info">' +
+        '<div class="cart-name">'+k.title+'</div>' +
+        '<div class="cart-meta">'+k.meta+'&nbsp;&nbsp;<span class="badge '+(k.type==='percuma'?'badge-free':'badge-paid')+'">'+(k.type==='percuma'?'Percuma':'Berbayar')+'</span></div>' +
+      '</div>' +
+      '<span class="cart-price">'+k.price+'</span>' +
+      '<button class="cart-remove" onclick="removeItem('+k.id+')" title="Buang dari cart">&#10005;</button>' +
+    '</div>';
+  }).join('');
+
+  mc.innerHTML = '<div class="layout">' +
+    '<div>' +
+      '<div class="card">' +
+        '<h2>Kursus dalam Cart ('+items.length+')</h2>' +
+        itemsHtml +
+        '<a href="kursus.html" style="font-size:13px;color:var(--teal);">+ Tambah kursus lain</a>' +
+      '</div>' +
+    '</div>' +
+    '<div>' +
+      '<div class="card">' +
+        '<h2>Ringkasan</h2>' +
+        '<div class="summary-row"><span>Kursus percuma</span><span style="color:var(--teal-light);">'+freeCount+' kursus (PERCUMA)</span></div>' +
+        '<div class="summary-row"><span>Kursus berbayar</span><span>'+paidCount+' kursus</span></div>' +
+        '<div class="summary-row"><span>Subtotal</span><span style="color:var(--yellow);">RM '+subtotal+'</span></div>' +
+        '<div class="summary-total"><span>Jumlah</span><span style="color:var(--teal);">RM '+subtotal+'</span></div>' +
+        '<button class="btn" onclick="checkout()">Daftar Sekarang &rarr;</button>' +
+        '<button class="btn-sec" onclick="window.location=\'kursus.html\'">Terus Melayari</button>' +
+      '</div>' +
+    '</div>' +
+  '</div>';
+}
+
+function checkout() {
+  var user = JSON.parse(localStorage.getItem('kkbm_user') || 'null');
+  if (!user) { window.location = 'login.html'; return; }
+  var cart = getCart();
+  var modal = document.getElementById('checkoutModal');
+  var body = document.getElementById('modalBody');
+  var items = cart.map(function(id){ return allKursus.find(function(k){return k.id===id;}); }).filter(Boolean);
+  var total = items.reduce(function(s,k){return s+k.harga;},0);
+  body.innerHTML =
+    '<div class="success-icon">&#128179;</div>' +
+    '<h2>Sahkan Pendaftaran</h2>' +
+    '<p>Anda akan mendaftar <strong>'+items.length+' kursus</strong>.<br/>Jumlah bayaran: <strong style="color:var(--teal);">RM '+total+'</strong></p>' +
+    '<div class="modal-actions">' +
+      '<button class="modal-btn" onclick="confirmCheckout()">Sahkan &amp; Daftar</button>' +
+      '<button class="modal-btn-sec" onclick="document.getElementById(\'checkoutModal\').classList.remove(\'open\')">Batal</button>' +
+    '</div>';
+  modal.classList.add('open');
+}
+
+function confirmCheckout() {
+  var cart = getCart();
+  var enrolled = JSON.parse(localStorage.getItem('enrolled') || '[]');
+  cart.forEach(function(id){ if (enrolled.indexOf(id) < 0) enrolled.push(id); });
+  localStorage.setItem('enrolled', JSON.stringify(enrolled));
+  saveCart([]);
+  var body = document.getElementById('modalBody');
+  body.innerHTML =
+    '<div class="success-icon">&#127881;</div>' +
+    '<h2>Pendaftaran Berjaya!</h2>' +
+    '<p>Anda telah berjaya mendaftar semua kursus. Mulakan pembelajaran anda sekarang!</p>' +
+    '<div class="modal-actions">' +
+      '<button class="modal-btn" onclick="window.location=\'dashboard.html\'">Ke Dashboard</button>' +
+    '</div>';
+}
+
+render();
+</script>
+<script src="logo.js"></script>
+<script src="nav.js"></script>
+<script src="ui.js"></script>
+</body>
+</html>

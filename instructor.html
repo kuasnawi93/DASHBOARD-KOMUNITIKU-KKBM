@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Instructor Studio &mdash; KomunitiKu @ KKBM</title>
+<link rel="stylesheet" href="nav.css"/>
+<link rel="stylesheet" href="design.css"/>
+<style>
+  /* ── Layout ─────────────────────────────────── */
+  .studio-layout { display:grid; grid-template-columns:280px 1fr; gap:0; min-height:calc(100vh - 64px); }
+  /* ── Left Sidebar ────────────────────────────── */
+  .studio-sidebar { background:var(--surface); border-right:1px solid var(--border); padding:24px 16px; display:flex; flex-direction:column; gap:4px; overflow-y:auto; }
+  .sidebar-section { font-size:var(--text-xs); font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.1em; padding:16px 12px 6px; }
+  .sidebar-btn { display:flex; align-items:center; gap:10px; padding:9px 12px; border-radius:var(--r-md); font-size:var(--text-sm); cursor:pointer; color:var(--muted); border:none; background:transparent; width:100%; text-align:left; transition:all var(--transition); }
+  .sidebar-btn .icon { font-size:16px; width:20px; text-align:center; }
+  .sidebar-btn:hover, .sidebar-btn.active { background:var(--teal-subtle); color:var(--teal); }
+  .sidebar-btn .sidebar-badge { margin-left:auto; background:var(--teal); color:#fff; font-size:10px; font-weight:700; padding:2px 7px; border-radius:var(--r-full); }
+  .modul-list-nav { display:flex; flex-direction:column; gap:4px; margin-top:4px; }
+  .modul-nav-item { display:flex; align-items:center; gap:8px; padding:7px 12px; border-radius:var(--r-md); font-size:12px; cursor:pointer; color:var(--muted); border:none; background:transparent; text-align:left; transition:all var(--transition); }
+  .modul-nav-item:hover { color:var(--text); background:rgba(255,255,255,0.03); }
+  .modul-nav-item.active { background:var(--teal-subtle); color:var(--teal); }
+  .modul-dot { width:8px; height:8px; border-radius:50%; background:var(--border); flex-shrink:0; }
+  .modul-dot.done { background:var(--green); }
+  .modul-dot.active { background:var(--teal); }
+  /* ── Main Editor ─────────────────────────────── */
+  .studio-main { padding:28px 32px; overflow-y:auto; }
+  /* ── Top bar ─────────────────────────────────── */
+  .studio-topbar { display:flex; align-items:center; justify-content:space-between; margin-bottom:24px; flex-wrap:wrap; gap:12px; }
+  .studio-topbar h1 { font-size:var(--text-xl); font-weight:800; color:var(--white); }
+  .topbar-actions { display:flex; gap:10px; flex-wrap:wrap; }
+  /* ── Tab panels ──────────────────────────────── */
+  .editor-tabs { display:flex; gap:2px; border-bottom:1px solid var(--border); margin-bottom:20px; }
+  .editor-tab { font-size:var(--text-sm); font-weight:600; padding:9px 16px; cursor:pointer; border:none; background:transparent; color:var(--muted); border-bottom:2px solid transparent; transition:all var(--transition); }
+  .editor-tab:hover { color:var(--text); }
+  .editor-tab.active { color:var(--teal); border-bottom-color:var(--teal); }
+  .tab-panel { display:none; }
+  .tab-panel.active { display:block; }
+  /* ── Module info ─────────────────────────────── */
+  .module-info-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  /* ── AI Assistant panel ──────────────────────── */
+  .ai-assist-panel { background:linear-gradient(135deg,#0d2926,#0d1f3a); border:1px solid rgba(20,184,166,0.25); border-radius:var(--r-lg); padding:20px; margin-bottom:20px; }
+  .ai-assist-header { display:flex; align-items:center; gap:10px; margin-bottom:14px; }
+  .ai-assist-icon { width:36px; height:36px; background:var(--teal); border-radius:var(--r-md); display:flex; align-items:center; justify-content:center; font-size:18px; }
+  .ai-assist-title { font-size:var(--text-sm); font-weight:700; color:var(--white); }
+  .ai-assist-sub { font-size:var(--text-xs); color:var(--muted); }
+  .ai-prompt-row { display:flex; gap:8px; margin-bottom:10px; }
+  .ai-prompt-input { flex:1; background:rgba(0,0,0,0.3); border:1px solid rgba(20,184,166,0.2); border-radius:var(--r-md); padding:9px 14px; color:var(--text); font-size:var(--text-sm); outline:none; font-family:var(--font); }
+  .ai-prompt-input:focus { border-color:var(--teal); }
+  .ai-generate-btn { background:var(--teal); color:#fff; border:none; border-radius:var(--r-md); padding:9px 16px; font-weight:700; font-size:var(--text-sm); cursor:pointer; white-space:nowrap; transition:background var(--transition); }
+  .ai-generate-btn:hover { background:var(--teal-dim); }
+  .ai-chips { display:flex; gap:6px; flex-wrap:wrap; }
+  .ai-chip { background:rgba(20,184,166,0.1); border:1px solid rgba(20,184,166,0.2); color:var(--teal-light); font-size:11px; font-weight:600; padding:5px 12px; border-radius:var(--r-full); cursor:pointer; transition:all var(--transition); }
+  .ai-chip:hover { background:var(--teal); color:#fff; border-color:var(--teal); }
+  .ai-output { background:rgba(0,0,0,0.25); border:1px solid rgba(20,184,166,0.15); border-radius:var(--r-md); padding:14px; margin-top:12px; font-size:var(--text-sm); color:var(--text); line-height:1.7; display:none; }
+  .ai-output.visible { display:block; }
+  .ai-output-actions { display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; }
+  /* ── Content editor ──────────────────────────── */
+  .content-editor { background:#0d1117; border:1px solid var(--border); border-radius:var(--r-lg); overflow:hidden; }
+  .editor-toolbar { display:flex; gap:2px; padding:8px 10px; border-bottom:1px solid var(--border); flex-wrap:wrap; }
+  .toolbar-btn { background:transparent; border:none; color:var(--muted); padding:6px 8px; border-radius:var(--r-sm); cursor:pointer; font-size:13px; transition:all var(--transition); font-weight:700; }
+  .toolbar-btn:hover { background:var(--surface-2); color:var(--text); }
+  .toolbar-sep { width:1px; background:var(--border); margin:2px 4px; }
+  .editor-area { min-height:220px; padding:16px; outline:none; font-size:var(--text-sm); line-height:1.8; color:var(--text); }
+  .editor-area:focus { border-color:var(--teal); }
+  /* ── Multimedia ──────────────────────────────── */
+  .media-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:16px; }
+  .media-card { background:var(--surface-2); border:1px dashed var(--border); border-radius:var(--r-lg); padding:20px; text-align:center; cursor:pointer; transition:all var(--transition); }
+  .media-card:hover { border-color:var(--teal); border-style:solid; }
+  .media-icon { font-size:28px; margin-bottom:8px; }
+  .media-label { font-size:var(--text-xs); font-weight:700; color:var(--text-secondary); }
+  .media-hint { font-size:11px; color:var(--muted); margin-top:2px; }
+  .uploaded-item { display:flex; align-items:center; gap:12px; padding:10px 12px; background:var(--surface-2); border:1px solid var(--border); border-radius:var(--r-md); margin-bottom:8px; }
+  .uploaded-icon { width:36px; height:36px; border-radius:var(--r-sm); display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
+  .uploaded-name { font-size:var(--text-sm); font-weight:600; color:var(--text); flex:1; }
+  .uploaded-size { font-size:11px; color:var(--muted); }
+  .remove-media { background:none; border:none; color:var(--muted); cursor:pointer; font-size:14px; }
+  .remove-media:hover { color:var(--red); }
+  /* ── Assessment ──────────────────────────────── */
+  .question-card { background:var(--surface-2); border:1px solid var(--border); border-radius:var(--r-lg); padding:16px; margin-bottom:12px; }
+  .question-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
+  .question-num { font-size:var(--text-xs); font-weight:700; color:var(--teal); text-transform:uppercase; letter-spacing:0.06em; }
+  .question-type { font-size:11px; color:var(--muted); background:var(--surface); padding:3px 10px; border-radius:var(--r-full); }
+  .question-text { font-size:var(--text-sm); font-weight:600; color:var(--white); margin-bottom:10px; }
+  .option-row { display:flex; align-items:center; gap:10px; padding:7px 10px; background:#0d1117; border:1px solid var(--border); border-radius:var(--r-md); margin-bottom:6px; }
+  .option-radio { width:16px; height:16px; border-radius:50%; border:2px solid var(--border); flex-shrink:0; }
+  .option-radio.correct { background:var(--green); border-color:var(--green); }
+  .option-text { font-size:var(--text-sm); color:var(--text); flex:1; }
+  .correct-indicator { font-size:11px; color:var(--green); font-weight:700; margin-left:auto; }
+  .add-question-btn { display:flex; align-items:center; justify-content:center; gap:8px; padding:14px; background:var(--surface-2); border:1px dashed var(--border); border-radius:var(--r-lg); cursor:pointer; color:var(--muted); font-size:var(--text-sm); font-weight:600; transition:all var(--transition); width:100%; }
+  .add-question-btn:hover { border-color:var(--teal); color:var(--teal); }
+  /* ── Preview ─────────────────────────────────── */
+  .preview-wrap { background:#0d1117; border:1px solid var(--border); border-radius:var(--r-lg); padding:24px; }
+  .preview-header { display:flex; align-items:center; gap:8px; margin-bottom:16px; color:var(--muted); font-size:var(--text-sm); }
+  .preview-modul { font-size:var(--text-xl); font-weight:800; color:var(--white); margin-bottom:8px; }
+  .preview-content { font-size:var(--text-sm); color:var(--text-secondary); line-height:1.8; }
+  /* ── Publish modal ───────────────────────────── */
+  .publish-checklist { list-style:none; display:flex; flex-direction:column; gap:8px; margin:16px 0; }
+  .publish-checklist li { display:flex; align-items:center; gap:10px; font-size:var(--text-sm); }
+  .check-icon { font-size:16px; }
+  @media(max-width:860px){ .studio-layout{grid-template-columns:1fr;} .studio-sidebar{border-right:none;border-bottom:1px solid var(--border);} .module-info-grid{grid-template-columns:1fr;} .media-grid{grid-template-columns:repeat(2,1fr);} }
+</style>
+</head>
+<body>
+<a href="#studio-main" class="skip-link">Skip to main content</a>
+<nav id="main-nav"></nav>
+
+<div class="studio-layout">
+  <!-- ── Sidebar ── -->
+  <aside class="studio-sidebar" aria-label="Navigasi Modul">
+    <!-- Course info -->
+    <div style="background:linear-gradient(135deg,#1a1035,#0d1f3a);border:1px solid rgba(167,139,250,0.2);border-radius:var(--r-lg);padding:14px;margin-bottom:8px;">
+      <div style="font-size:11px;color:var(--purple);font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;">Kursus Semasa</div>
+      <div style="font-size:var(--text-sm);font-weight:700;color:var(--white);" id="courseTitle">Microsoft Excel Intermediate</div>
+      <div style="font-size:11px;color:var(--muted);margin-top:2px;">6 modul &middot; 4 draf, 2 diterbitkan</div>
+    </div>
+
+    <div class="sidebar-section">Modul Kursus</div>
+    <div class="modul-list-nav" id="modulNav">
+      <!-- Populated by JS -->
+    </div>
+
+    <button class="sidebar-btn" style="margin-top:8px;border:1px dashed var(--border);border-radius:var(--r-md);" onclick="addModule()">
+      <span class="icon">+</span> Tambah Modul Baru
+    </button>
+
+    <div class="sidebar-section" style="margin-top:12px;">Tetapan Kursus</div>
+    <button class="sidebar-btn" onclick="showTab('settings')"><span class="icon">⚙️</span> Maklumat Kursus</button>
+    <button class="sidebar-btn" onclick="previewCourse()"><span class="icon">👁️</span> Preview Kursus</button>
+    <a class="sidebar-btn" href="dashboard-admin.html"><span class="icon">📊</span> Kembali ke Dashboard</a>
+
+    <div style="margin-top:auto;padding-top:16px;border-top:1px solid var(--border);">
+      <div style="font-size:11px;color:var(--muted);text-align:center;padding:8px;">
+        💡 Tekan <kbd style="background:var(--surface-2);border:1px solid var(--border);border-radius:3px;padding:1px 5px;font-size:10px;">Ctrl+S</kbd> untuk simpan draf
+      </div>
+    </div>
+  </aside>
+
+  <!-- ── Main Editor ── -->
+  <main class="studio-main" id="studio-main" aria-label="Editor Modul">
+    <!-- Top bar -->
+    <div class="studio-topbar">
+      <div>
+        <div class="breadcrumb">
+          <a href="dashboard-admin.html">Dashboard</a>
+          <span class="sep">/</span>
+          <a href="#">Kursus</a>
+          <span class="sep">/</span>
+          <span class="current" id="currentModulName">Modul 1: Pengenalan Excel</span>
+        </div>
+        <h1 id="editorTitle">✏️ Editor Modul</h1>
+      </div>
+      <div class="topbar-actions">
+        <button class="btn-secondary btn-sm" onclick="saveDraft()">💾 Simpan Draf</button>
+        <button class="btn btn-sm" onclick="openPublishModal()">🚀 Terbit Modul</button>
+      </div>
+    </div>
+
+    <!-- Editor Tabs -->
+    <div class="editor-tabs" role="tablist" aria-label="Bahagian Editor">
+      <button class="editor-tab active" role="tab" aria-selected="true" onclick="switchTab('nota',this)">📝 Nota &amp; Kandungan</button>
+      <button class="editor-tab" role="tab" aria-selected="false" onclick="switchTab('media',this)">🎬 Multimedia</button>
+      <button class="editor-tab" role="tab" aria-selected="false" onclick="switchTab('assessment',this)">📋 Assessment</button>
+      <button class="editor-tab" role="tab" aria-selected="false" onclick="switchTab('preview',this)">👁️ Preview</button>
+      <button class="editor-tab" role="tab" aria-selected="false" onclick="switchTab('settings',this)" id="tab-settings-btn">⚙️ Tetapan</button>
+    </div>
+
+    <!-- ── NOTA TAB ── -->
+    <div class="tab-panel active" id="panel-nota">
+      <!-- AI Assistant -->
+      <div class="ai-assist-panel">
+        <div class="ai-assist-header">
+          <div class="ai-assist-icon">🤖</div>
+          <div>
+            <div class="ai-assist-title">AI Content Assistant</div>
+            <div class="ai-assist-sub">Jana nota, ringkasan, atau terangkan konsep secara automatik.</div>
+          </div>
+        </div>
+        <div class="ai-prompt-row">
+          <input class="ai-prompt-input" id="aiPromptInput" placeholder="Contoh: Jana nota untuk topik 'Fungsi VLOOKUP dalam Excel'..." aria-label="Arahan kepada AI"/>
+          <button class="ai-generate-btn" onclick="generateContent()" id="generateBtn">✨ Jana</button>
+        </div>
+        <div class="ai-chips">
+          <span class="ai-chip" onclick="setPrompt('Jana pengenalan ringkas untuk modul ini')">📖 Pengenalan</span>
+          <span class="ai-chip" onclick="setPrompt('Senaraikan 5 perkara penting untuk pelajar tahu')">📌 Poin Penting</span>
+          <span class="ai-chip" onclick="setPrompt('Buat contoh praktikal dan senario kehidupan sebenar')">💡 Contoh Praktikal</span>
+          <span class="ai-chip" onclick="setPrompt('Jana ringkasan dan kesimpulan untuk modul ini')">📝 Ringkasan</span>
+          <span class="ai-chip" onclick="setPrompt('Cadangkan aktiviti pelajar untuk mengukuhkan kefahaman')">🎯 Aktiviti</span>
+        </div>
+        <div class="ai-output" id="aiOutput">
+          <div id="aiOutputText"></div>
+          <div class="ai-output-actions">
+            <button class="btn btn-sm" onclick="insertToEditor()">✅ Masukkan ke Editor</button>
+            <button class="btn-secondary btn-sm" onclick="regenerate()">🔄 Jana Semula</button>
+            <button class="btn-secondary btn-sm" onclick="document.getElementById('aiOutput').classList.remove('visible')">✕ Tutup</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Rich Text Editor -->
+      <div class="form-group">
+        <label for="modulTitle">Tajuk Modul</label>
+        <input type="text" id="modulTitle" value="Pengenalan kepada Microsoft Excel" placeholder="Tajuk modul..."/>
+        <div class="hint">Tajuk yang jelas membantu pelajar memahami apa yang akan dipelajari.</div>
+      </div>
+
+      <div class="form-group">
+        <label>Kandungan Nota</label>
+        <div class="content-editor">
+          <div class="editor-toolbar" role="toolbar" aria-label="Alat format teks">
+            <button class="toolbar-btn" onclick="fmt('bold')" data-tooltip="Tebal (Ctrl+B)" aria-label="Tebal"><strong>B</strong></button>
+            <button class="toolbar-btn" onclick="fmt('italic')" data-tooltip="Condong" aria-label="Condong"><em>I</em></button>
+            <button class="toolbar-btn" onclick="fmt('underline')" data-tooltip="Garis bawah" aria-label="Garis bawah"><u>U</u></button>
+            <span class="toolbar-sep"></span>
+            <button class="toolbar-btn" onclick="fmt('insertUnorderedList')" aria-label="Senarai titik">☰</button>
+            <button class="toolbar-btn" onclick="fmt('insertOrderedList')" aria-label="Senarai bernombor">1.</button>
+            <span class="toolbar-sep"></span>
+            <button class="toolbar-btn" onclick="fmt('formatBlock','h2')" aria-label="Tajuk besar">H2</button>
+            <button class="toolbar-btn" onclick="fmt('formatBlock','h3')" aria-label="Tajuk kecil">H3</button>
+            <button class="toolbar-btn" onclick="fmt('formatBlock','p')" aria-label="Perenggan">¶</button>
+            <span class="toolbar-sep"></span>
+            <button class="toolbar-btn" onclick="fmt('createLink')" aria-label="Pautan">🔗</button>
+            <button class="toolbar-btn" onclick="clearEditor()" aria-label="Padam semua" data-tooltip="Padam kandungan">🗑️</button>
+          </div>
+          <div class="editor-area" id="editorArea" contenteditable="true" role="textbox" aria-multiline="true" aria-label="Kandungan nota modul">
+            <h2>Pengenalan kepada Microsoft Excel</h2>
+            <p>Microsoft Excel adalah aplikasi hamparan elektronik yang digunakan secara meluas dalam persekitaran kerja. Dalam modul ini, anda akan mempelajari asas-asas Excel yang diperlukan untuk meningkatkan produktiviti kerja anda.</p>
+            <h3>Objektif Pembelajaran</h3>
+            <ul>
+              <li>Memahami antara muka Excel dan fungsi asas</li>
+              <li>Menggunakan formula mudah (+, -, *, /)</li>
+              <li>Membuat jadual data yang kemas dan teratur</li>
+              <li>Menyimpan dan berkongsi fail Excel</li>
+            </ul>
+          </div>
+        </div>
+        <div class="hint">Gunakan toolbar untuk format teks, atau AI Assistant di atas untuk jana kandungan automatik.</div>
+      </div>
+    </div>
+
+    <!-- ── MULTIMEDIA TAB ── -->
+    <div class="tab-panel" id="panel-media">
+      <div class="ai-assist-panel">
+        <div class="ai-assist-header">
+          <div class="ai-assist-icon">🤖</div>
+          <div>
+            <div class="ai-assist-title">AI Media Suggester</div>
+            <div class="ai-assist-sub">AI akan cadangkan jenis media terbaik untuk topik ini.</div>
+          </div>
+        </div>
+        <div class="ai-prompt-row">
+          <input class="ai-prompt-input" id="mediaPromptInput" placeholder="Contoh: Cadangkan multimedia untuk mengajar VLOOKUP..." aria-label="Arahan media AI"/>
+          <button class="ai-generate-btn" onclick="generateMedia()">✨ Cadang</button>
+        </div>
+        <div class="ai-output" id="mediaOutput">
+          <div id="mediaOutputText"></div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Tambah Media</label>
+        <div class="media-grid">
+          <div class="media-card" onclick="addMedia('video')" role="button" aria-label="Upload Video" tabindex="0">
+            <div class="media-icon">🎬</div>
+            <div class="media-label">Video</div>
+            <div class="media-hint">MP4, MOV, AVI</div>
+          </div>
+          <div class="media-card" onclick="addMedia('pdf')" role="button" aria-label="Upload PDF" tabindex="0">
+            <div class="media-icon">📄</div>
+            <div class="media-label">PDF / Slaid</div>
+            <div class="media-hint">PDF, PPT, PPTX</div>
+          </div>
+          <div class="media-card" onclick="addMedia('image')" role="button" aria-label="Upload Gambar" tabindex="0">
+            <div class="media-icon">🖼️</div>
+            <div class="media-label">Gambar</div>
+            <div class="media-hint">JPG, PNG, GIF</div>
+          </div>
+          <div class="media-card" onclick="addMedia('audio')" role="button" aria-label="Upload Audio" tabindex="0">
+            <div class="media-icon">🎵</div>
+            <div class="media-label">Audio</div>
+            <div class="media-hint">MP3, WAV, M4A</div>
+          </div>
+          <div class="media-card" onclick="addMedia('link')" role="button" aria-label="Tambah YouTube" tabindex="0">
+            <div class="media-icon">▶️</div>
+            <div class="media-label">YouTube / Link</div>
+            <div class="media-hint">URL video luaran</div>
+          </div>
+          <div class="media-card" onclick="addMedia('interactive')" role="button" aria-label="Latihan Interaktif" tabindex="0">
+            <div class="media-icon">🎮</div>
+            <div class="media-label">Interaktif</div>
+            <div class="media-hint">Kuiz mini, drag-drop</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Media Dimuat Naik</label>
+        <div id="uploadedList">
+          <div class="uploaded-item">
+            <div class="uploaded-icon" style="background:#1e3a5f;">🎬</div>
+            <div class="uploaded-name">pengenalan-excel-intro.mp4</div>
+            <div class="uploaded-size">24.5 MB &middot; Video</div>
+            <button class="remove-media" onclick="removeMedia(this)" aria-label="Buang media">✕</button>
+          </div>
+          <div class="uploaded-item">
+            <div class="uploaded-icon" style="background:#451a03;">📄</div>
+            <div class="uploaded-name">slaid-excel-modul1.pdf</div>
+            <div class="uploaded-size">2.1 MB &middot; PDF</div>
+            <button class="remove-media" onclick="removeMedia(this)" aria-label="Buang media">✕</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── ASSESSMENT TAB ── -->
+    <div class="tab-panel" id="panel-assessment">
+      <div class="ai-assist-panel">
+        <div class="ai-assist-header">
+          <div class="ai-assist-icon">🤖</div>
+          <div>
+            <div class="ai-assist-title">AI Assessment Generator</div>
+            <div class="ai-assist-sub">Jana soalan penilaian secara automatik berdasarkan kandungan modul.</div>
+          </div>
+        </div>
+        <div class="ai-prompt-row">
+          <input class="ai-prompt-input" id="assessPromptInput" placeholder="Contoh: Jana 5 soalan MCQ tentang asas Excel..." aria-label="Arahan assessment AI"/>
+          <button class="ai-generate-btn" onclick="generateAssessment()">✨ Jana Soalan</button>
+        </div>
+        <div class="ai-chips">
+          <span class="ai-chip" onclick="genAssessType('MCQ')">🔘 MCQ (5 soalan)</span>
+          <span class="ai-chip" onclick="genAssessType('Benar/Salah')">✅ Benar / Salah</span>
+          <span class="ai-chip" onclick="genAssessType('Isian Tempat Kosong')">📝 Isian Kosong</span>
+          <span class="ai-chip" onclick="genAssessType('Esei Pendek')">✍️ Esei Pendek</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Tetapan Penilaian</label>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px;">
+          <div>
+            <label style="font-size:11px;color:var(--muted);">Markah Lulus (%)</label>
+            <input type="number" value="70" min="0" max="100" aria-label="Markah lulus"/>
+          </div>
+          <div>
+            <label style="font-size:11px;color:var(--muted);">Had Percubaan</label>
+            <input type="number" value="3" min="1" aria-label="Had percubaan"/>
+          </div>
+          <div>
+            <label style="font-size:11px;color:var(--muted);">Masa (minit)</label>
+            <input type="number" value="30" min="5" aria-label="Had masa"/>
+          </div>
+        </div>
+      </div>
+
+      <div id="questionsList">
+        <div class="question-card">
+          <div class="question-header">
+            <span class="question-num">Soalan 1</span>
+            <span class="question-type">MCQ</span>
+          </div>
+          <div class="question-text">Apakah fungsi utama Microsoft Excel?</div>
+          <div class="option-row"><div class="option-radio"></div><div class="option-text">Untuk menghantar emel</div></div>
+          <div class="option-row"><div class="option-radio correct"></div><div class="option-text">Untuk mengurus dan menganalisis data dalam jadual</div><span class="correct-indicator">✓ Betul</span></div>
+          <div class="option-row"><div class="option-radio"></div><div class="option-text">Untuk membuat pembentangan slaid</div></div>
+          <div class="option-row"><div class="option-radio"></div><div class="option-text">Untuk merekod video</div></div>
+        </div>
+        <div class="question-card">
+          <div class="question-header">
+            <span class="question-num">Soalan 2</span>
+            <span class="question-type">Benar/Salah</span>
+          </div>
+          <div class="question-text">Formula Excel sentiasa bermula dengan tanda "=" (sama dengan).</div>
+          <div class="option-row"><div class="option-radio correct"></div><div class="option-text">Benar</div><span class="correct-indicator">✓ Betul</span></div>
+          <div class="option-row"><div class="option-radio"></div><div class="option-text">Salah</div></div>
+        </div>
+      </div>
+      <button class="add-question-btn" onclick="addQuestion()" aria-label="Tambah soalan baru">+ Tambah Soalan Baru</button>
+    </div>
+
+    <!-- ── PREVIEW TAB ── -->
+    <div class="tab-panel" id="panel-preview">
+      <div class="alert alert-info" role="alert">
+        <span>ℹ️</span><span>Ini adalah preview dari perspektif pelajar. Kandungan mungkin berbeza dari versi akhir.</span>
+      </div>
+      <div class="preview-wrap">
+        <div class="preview-header">
+          <span>📚 Microsoft Excel Intermediate</span>
+          <span style="margin-left:auto;font-size:11px;">Modul 1 dari 8</span>
+        </div>
+        <div class="preview-modul" id="previewTitle">Pengenalan kepada Microsoft Excel</div>
+        <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
+          <span class="mode-badge mode-f2f">Bersemuka</span>
+          <span class="badge badge-paid">Berbayar</span>
+          <span style="font-size:12px;color:var(--muted);">⏱️ 30 minit &middot; 2 soalan penilaian</span>
+        </div>
+        <div class="progress-track" style="margin-bottom:20px;"><div class="progress-fill" style="width:40%;"></div></div>
+        <div class="preview-content" id="previewContent"></div>
+        <div style="margin-top:20px;display:flex;gap:10px;">
+          <button class="btn btn-sm">Modul Seterusnya →</button>
+          <button class="btn-secondary btn-sm">← Modul Sebelum</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SETTINGS TAB ── -->
+    <div class="tab-panel" id="panel-settings">
+      <div class="card" style="margin-bottom:16px;">
+        <div class="card-title">Maklumat Kursus</div>
+        <div class="module-info-grid">
+          <div class="form-group">
+            <label>Tajuk Kursus</label>
+            <input type="text" id="settingTitle" value="Microsoft Excel Intermediate" aria-label="Tajuk kursus"/>
+          </div>
+          <div class="form-group">
+            <label>Kategori</label>
+            <select aria-label="Kategori kursus">
+              <option>IT &amp; Teknologi</option>
+              <option>Perniagaan</option>
+              <option>Reka Bentuk</option>
+              <option>Keusahawanan</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Mod Penyampaian</label>
+            <select id="settingMod" aria-label="Mod penyampaian">
+              <option value="f2f">Bersemuka (F2F)</option>
+              <option value="online">Online</option>
+              <option value="hybrid">Hybrid</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Harga (RM)</label>
+            <input type="number" value="80" min="0" aria-label="Harga kursus"/>
+            <div class="hint">Isikan 0 untuk kursus percuma.</div>
+          </div>
+          <div class="form-group" style="grid-column:1/-1;">
+            <label>Penerangan Kursus</label>
+            <textarea rows="4" aria-label="Penerangan kursus">Kursus Microsoft Excel peringkat pertengahan yang merangkumi fungsi lanjutan, analisis data, dan visualisasi untuk keperluan kerja profesional.</textarea>
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:8px;flex-wrap:wrap;">
+          <button class="btn btn-sm" onclick="saveCourseSettings()">💾 Simpan Tetapan</button>
+          <button class="btn-danger btn-sm" onclick="deleteCourse()">🗑️ Padam Kursus</button>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Publish Modal -->
+<div class="modal-overlay" id="publishModal" role="dialog" aria-modal="true" aria-labelledby="publishTitle">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="publishTitle">🚀 Terbitkan Modul</div>
+      <div class="modal-desc">Semak senarai semak sebelum menerbitkan modul kepada pelajar.</div>
+    </div>
+    <ul class="publish-checklist" aria-label="Senarai semak penerbitan">
+      <li><span class="check-icon">✅</span><span>Tajuk modul diisi</span></li>
+      <li><span class="check-icon">✅</span><span>Kandungan nota lengkap</span></li>
+      <li><span class="check-icon">✅</span><span>Sekurang-kurangnya 1 media dimuat naik</span></li>
+      <li><span class="check-icon">✅</span><span>Penilaian mempunyai ≥ 2 soalan</span></li>
+      <li><span class="check-icon">⚠️</span><span style="color:var(--yellow);">Ulasan penyelia belum diterima (pilihan)</span></li>
+    </ul>
+    <div class="modal-footer">
+      <button class="btn" onclick="publishModule()">✅ Terbitkan Sekarang</button>
+      <button class="btn-secondary" onclick="document.getElementById('publishModal').classList.remove('open')">Batal</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Question Modal -->
+<div class="modal-overlay" id="addQModal" role="dialog" aria-modal="true" aria-labelledby="addQTitle">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="addQTitle">+ Tambah Soalan</div>
+    </div>
+    <div class="form-group">
+      <label>Jenis Soalan</label>
+      <select id="qType" aria-label="Jenis soalan">
+        <option>MCQ (Pilihan Berganda)</option>
+        <option>Benar / Salah</option>
+        <option>Isian Tempat Kosong</option>
+        <option>Esei Pendek</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Teks Soalan</label>
+      <textarea id="qText" rows="3" placeholder="Taip soalan anda di sini..." aria-label="Teks soalan"></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="saveQuestion()">Simpan Soalan</button>
+      <button class="btn-secondary" onclick="document.getElementById('addQModal').classList.remove('open')">Batal</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ── Module data ── */
+var modules = [
+  {id:1,title:'Pengenalan kepada Excel',status:'published'},
+  {id:2,title:'Formula Asas (+, -, *, /)',status:'published'},
+  {id:3,title:'VLOOKUP & Fungsi Carian',status:'draft'},
+  {id:4,title:'Pivot Table',status:'draft'},
+  {id:5,title:'Carta & Visualisasi',status:'draft'},
+  {id:6,title:'Dashboard & Laporan',status:'draft'},
+];
+var activeModule = 1;
+
+function renderModuleNav() {
+  var nav = document.getElementById('modulNav');
+  nav.innerHTML = modules.map(function(m) {
+    return '<button class="modul-nav-item' + (m.id===activeModule?' active':'') + '" onclick="loadModule('+m.id+')" aria-label="Modul '+m.id+': '+m.title+'">' +
+      '<span class="modul-dot'+(m.status==='published'?' done':m.id===activeModule?' active':'')+'"></span>' +
+      '<span style="flex:1;">'+m.title+'</span>' +
+      '<span style="font-size:10px;color:var(--muted);">'+(m.status==='published'?'✅':'📝')+'</span>' +
+    '</button>';
+  }).join('');
+}
+renderModuleNav();
+
+function loadModule(id) {
+  activeModule = id;
+  var m = modules.find(function(x){return x.id===id;});
+  if (m) {
+    document.getElementById('currentModulName').textContent = 'Modul '+m.id+': '+m.title;
+    document.getElementById('modulTitle').value = m.title;
+    document.getElementById('editorTitle').textContent = '✏️ Modul '+m.id+': '+m.title;
+  }
+  renderModuleNav();
+  showToast('Modul ' + id + ' dimuatkan.', 'info', 1500);
+}
+
+function addModule() {
+  var title = prompt('Tajuk modul baru:');
+  if (!title || !title.trim()) return;
+  modules.push({id: modules.length+1, title: title.trim(), status: 'draft'});
+  renderModuleNav();
+  showToast('Modul baru ditambah!', 'success');
+}
+
+/* ── Tab switching — Rule 2: shortcuts ── */
+function switchTab(name, btn) {
+  document.querySelectorAll('.editor-tab').forEach(function(t){t.classList.remove('active'); t.setAttribute('aria-selected','false');});
+  document.querySelectorAll('.tab-panel').forEach(function(p){p.classList.remove('active');});
+  var panel = document.getElementById('panel-'+name);
+  if (panel) panel.classList.add('active');
+  if (btn) { btn.classList.add('active'); btn.setAttribute('aria-selected','true'); }
+  if (name === 'preview') updatePreview();
+}
+function showTab(name) { switchTab(name, document.getElementById('tab-'+name+'-btn')); }
+
+/* ── Rich text editor ── */
+function fmt(cmd, val) {
+  document.getElementById('editorArea').focus();
+  if (cmd === 'createLink') {
+    var url = prompt('URL pautan:');
+    if (url) document.execCommand(cmd, false, url);
+  } else {
+    document.execCommand(cmd, false, val || null);
+  }
+}
+function clearEditor() {
+  confirmAction({title:'Padam Kandungan?',message:'Semua teks dalam editor akan dipadam.',danger:true,confirmLabel:'Ya, Padam'}).then(function(ok){
+    if (ok) { document.getElementById('editorArea').innerHTML = ''; showToast('Kandungan dipadam.','warning'); }
+  });
+}
+
+/* ── Ctrl+S save ── */
+document.addEventListener('keydown', function(e) {
+  if (e.ctrlKey && e.key === 's') { e.preventDefault(); saveDraft(); }
+});
+
+function saveDraft() {
+  var btn = document.querySelector('.topbar-actions .btn-secondary');
+  if (btn) { btn.classList.add('loading'); }
+  setTimeout(function() {
+    if (btn) btn.classList.remove('loading');
+    showToast('Draf disimpan!', 'success');
+  }, 800);
+}
+
+/* ── AI Content Generation ── */
+var AI_RESPONSES = {
+  pengenalan: '<h3>Pengenalan Modul</h3><p>Selamat datang ke modul ini! Dalam sesi pembelajaran ini, anda akan didedahkan dengan konsep-konsep asas yang membentuk asas kemahiran anda. Adalah penting untuk memahami setiap konsep sebelum meneruskan ke modul seterusnya.</p><h3>Apa yang akan anda pelajari?</h3><ul><li>Memahami konsep asas dan terminologi penting</li><li>Mengenal pasti komponen utama dan fungsinya</li><li>Mengaplikasikan pengetahuan dalam situasi praktikal</li></ul>',
+  poin: '<h3>5 Perkara Penting untuk Diketahui</h3><ol><li><strong>Konsistensi</strong> — Sentiasa ikut format dan struktur yang sama dalam setiap kerja.</li><li><strong>Ketepatan</strong> — Data yang tepat menghasilkan keputusan yang lebih baik.</li><li><strong>Kecekapan</strong> — Gunakan shortcut dan fungsi automatik untuk jimat masa.</li><li><strong>Dokumentasi</strong> — Label setiap lajur dan baris dengan jelas.</li><li><strong>Semakan</strong> — Sentiasa semak formula dan data sebelum berkongsi.</li></ol>',
+  contoh: '<h3>Contoh Praktikal</h3><p>Bayangkan anda seorang pengurus gerai di pasar malam. Anda perlu:</p><ul><li>Rekod jualan harian dalam jadual</li><li>Hitung jumlah pendapatan secara automatik</li><li>Jejak stok barang yang habis</li><li>Buat laporan mingguan untuk diserahkan kepada pengelola</li></ul><p>Semua ini boleh dilakukan dengan mudah menggunakan kemahiran yang anda pelajari dalam modul ini!</p>',
+  ringkasan: '<h3>Ringkasan &amp; Kesimpulan</h3><p>Tahniah kerana berjaya melengkapkan modul ini! Anda telah mempelajari:</p><ul><li>✅ Konsep asas dan cara menggunakannya</li><li>✅ Aplikasi praktikal dalam kehidupan seharian</li><li>✅ Tips dan teknik untuk meningkatkan produktiviti</li></ul><p><strong>Langkah seterusnya:</strong> Teruskan ke modul berikutnya untuk memperdalam pengetahuan anda. Selamat belajar! 🎓</p>',
+  aktiviti: '<h3>Aktiviti Pelajar</h3><p>Untuk mengukuhkan kefahaman anda, cuba lakukan aktiviti berikut:</p><ol><li><strong>Aktiviti 1 (10 minit)</strong> — Buat jadual mudah dengan 5 baris data.</li><li><strong>Aktiviti 2 (15 minit)</strong> — Gunakan formula untuk mengira jumlah dan purata.</li><li><strong>Aktiviti 3 (20 minit)</strong> — Kongsi hasil kerja anda dengan rakan sebelah untuk semakan.</li></ol><p><em>💡 Tip: Simpan kerja anda setiap 5 minit!</em></p>',
+};
+
+function setPrompt(text) { document.getElementById('aiPromptInput').value = text; }
+
+function generateContent() {
+  var prompt = document.getElementById('aiPromptInput').value.toLowerCase();
+  var btn = document.getElementById('generateBtn');
+  btn.classList.add('loading'); btn.textContent = 'Jana...';
+  setTimeout(function() {
+    btn.classList.remove('loading'); btn.textContent = '✨ Jana';
+    var reply = AI_RESPONSES.ringkasan;
+    if (prompt.indexOf('pengenalan') >= 0) reply = AI_RESPONSES.pengenalan;
+    else if (prompt.indexOf('poin') >= 0 || prompt.indexOf('penting') >= 0) reply = AI_RESPONSES.poin;
+    else if (prompt.indexOf('contoh') >= 0 || prompt.indexOf('praktikal') >= 0) reply = AI_RESPONSES.contoh;
+    else if (prompt.indexOf('aktiviti') >= 0) reply = AI_RESPONSES.aktiviti;
+    document.getElementById('aiOutputText').innerHTML = reply;
+    document.getElementById('aiOutput').classList.add('visible');
+    showToast('Kandungan berjaya dijana oleh AI!', 'success');
+  }, 1200);
+}
+
+function insertToEditor() {
+  var content = document.getElementById('aiOutputText').innerHTML;
+  document.getElementById('editorArea').innerHTML += content;
+  document.getElementById('aiOutput').classList.remove('visible');
+  document.getElementById('aiPromptInput').value = '';
+  showToast('Kandungan dimasukkan ke editor!', 'success');
+}
+
+function regenerate() {
+  document.getElementById('aiOutput').classList.remove('visible');
+  generateContent();
+}
+
+/* ── AI Media Suggester ── */
+function generateMedia() {
+  var out = document.getElementById('mediaOutput');
+  var outText = document.getElementById('mediaOutputText');
+  setTimeout(function() {
+    outText.innerHTML = '<strong>🤖 Cadangan AI untuk modul ini:</strong><br/><br/>' +
+      '🎬 <strong>Video demonstrasi</strong> (5-8 minit) — Tunjukkan langkah demi langkah cara menggunakan fungsi<br/>' +
+      '📄 <strong>Nota PDF</strong> — Ringkasan poin penting untuk pelajar rujuk semula<br/>' +
+      '🖼️ <strong>Infografik</strong> — Carta visual menunjukkan aliran kerja<br/>' +
+      '🎮 <strong>Kuiz mini interaktif</strong> — 3-5 soalan untuk semak kefahaman segera';
+    out.classList.add('visible');
+    showToast('Cadangan media dijana!', 'success');
+  }, 800);
+}
+
+/* ── AI Assessment Generator ── */
+var generatedQuestions = 0;
+function generateAssessment() {
+  var prompt = document.getElementById('assessPromptInput').value || 'soalan MCQ';
+  generateAIQuestions('MCQ');
+}
+function genAssessType(type) {
+  document.getElementById('assessPromptInput').value = 'Jana soalan ' + type + ' untuk modul ini';
+  generateAIQuestions(type);
+}
+function generateAIQuestions(type) {
+  generatedQuestions++;
+  var qList = document.getElementById('questionsList');
+  setTimeout(function() {
+    var newQ = document.createElement('div');
+    newQ.className = 'question-card';
+    newQ.innerHTML =
+      '<div class="question-header"><span class="question-num">Soalan ' + (generatedQuestions + 2) + ' (AI)</span><span class="question-type">' + type + '</span></div>' +
+      '<div class="question-text">⭐ [Soalan dijana AI] Berdasarkan kandungan modul, apakah langkah pertama yang perlu dilakukan?</div>' +
+      '<div class="option-row"><div class="option-radio"></div><div class="option-text">Pilihan A — langkah pertama</div></div>' +
+      '<div class="option-row"><div class="option-radio correct"></div><div class="option-text">Pilihan B — jawapan yang betul</div><span class="correct-indicator">✓ Betul</span></div>' +
+      '<div class="option-row"><div class="option-radio"></div><div class="option-text">Pilihan C — langkah lain</div></div>';
+    qList.appendChild(newQ);
+    showToast('Soalan AI berjaya dijana!', 'success');
+  }, 900);
+}
+
+/* ── Add Question (manual) ── */
+function addQuestion() { document.getElementById('addQModal').classList.add('open'); }
+function saveQuestion() {
+  var text = document.getElementById('qText').value.trim();
+  var type = document.getElementById('qType').value;
+  if (!text) { showToast('Sila masukkan teks soalan.', 'error'); return; }
+  var qList = document.getElementById('questionsList');
+  var newQ = document.createElement('div');
+  newQ.className = 'question-card';
+  newQ.innerHTML =
+    '<div class="question-header"><span class="question-num">Soalan ' + (qList.children.length + 1) + '</span><span class="question-type">' + type.split(' ')[0] + '</span></div>' +
+    '<div class="question-text">' + text + '</div>' +
+    '<div class="option-row"><div class="option-radio correct"></div><div class="option-text">Jawapan betul (dikemaskini di sini)</div><span class="correct-indicator">✓ Betul</span></div>';
+  qList.appendChild(newQ);
+  document.getElementById('addQModal').classList.remove('open');
+  document.getElementById('qText').value = '';
+  showToast('Soalan berjaya ditambah!', 'success');
+}
+
+/* ── Media ── */
+function addMedia(type) {
+  var labels = {video:'video demo', pdf:'slaid PDF', image:'gambar', audio:'audio', link:'link YouTube', interactive:'modul interaktif'};
+  var icons = {video:'🎬', pdf:'📄', image:'🖼️', audio:'🎵', link:'▶️', interactive:'🎮'};
+  var colours = {video:'#1e3a5f', pdf:'#451a03', image:'#4a1942', audio:'#134e4a', link:'#1a3a1a', interactive:'#3a2a1a'};
+  var list = document.getElementById('uploadedList');
+  var item = document.createElement('div');
+  item.className = 'uploaded-item';
+  item.innerHTML =
+    '<div class="uploaded-icon" style="background:' + colours[type] + ';">' + icons[type] + '</div>' +
+    '<div class="uploaded-name">'+labels[type]+'-modul'+activeModule+'.'+({video:'mp4',pdf:'pdf',image:'jpg',audio:'mp3',link:'url',interactive:'html'}[type])+'</div>' +
+    '<div class="uploaded-size">Dimuat naik &middot; ' + type.toUpperCase() + '</div>' +
+    '<button class="remove-media" onclick="removeMedia(this)" aria-label="Buang media">✕</button>';
+  list.appendChild(item);
+  showToast(icons[type] + ' ' + labels[type] + ' berjaya ditambah!', 'success');
+}
+function removeMedia(btn) {
+  confirmAction({title:'Buang Media?', message:'Media ini akan dipadam dari modul.', danger:true, confirmLabel:'Ya, Buang'}).then(function(ok){
+    if (ok) { btn.closest('.uploaded-item').remove(); showToast('Media dibuang.', 'info'); }
+  });
+}
+
+/* ── Preview ── */
+function updatePreview() {
+  document.getElementById('previewTitle').textContent = document.getElementById('modulTitle').value || 'Tajuk Modul';
+  document.getElementById('previewContent').innerHTML = document.getElementById('editorArea').innerHTML;
+}
+function previewCourse() { switchTab('preview', null); }
+
+/* ── Publish ── */
+function openPublishModal() { document.getElementById('publishModal').classList.add('open'); }
+function publishModule() {
+  var m = modules.find(function(x){return x.id===activeModule;});
+  if (m) m.status = 'published';
+  renderModuleNav();
+  document.getElementById('publishModal').classList.remove('open');
+  showToast('🎉 Modul berjaya diterbitkan!', 'success', 4000);
+}
+
+/* ── Settings ── */
+function saveCourseSettings() {
+  var title = document.getElementById('settingTitle').value.trim();
+  if (title) {
+    document.getElementById('courseTitle').textContent = title;
+  }
+  showToast('Tetapan kursus disimpan!', 'success');
+}
+function deleteCourse() {
+  confirmAction({title:'Padam Kursus?', message:'Semua modul dan data kursus ini akan dipadam secara kekal.', danger:true, confirmLabel:'Ya, Padam Kursus'}).then(function(ok){
+    if (ok) { showToast('Kursus dipadam. Mengalihkan...', 'error'); setTimeout(function(){ window.location = 'dashboard-admin.html'; }, 1500); }
+  });
+}
+</script>
+<script src="logo.js"></script>
+<script src="nav.js"></script>
+<script src="ui.js"></script>
+</body>
+</html>

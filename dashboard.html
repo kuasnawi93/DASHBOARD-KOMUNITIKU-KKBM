@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Dashboard &mdash; KomunitiKu @ KKBM</title>
+<link rel="stylesheet" href="nav.css"/>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  :root{--bg:#0d1117;--surface:#161b22;--border:#2d3748;--teal:#14b8a6;--teal-light:#2dd4bf;--teal-dim:#0d9488;--text:#e2e8f0;--muted:#8b949e;--white:#fff;}
+  body{font-family:-apple-system,"Segoe UI",system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;font-size:15px;}
+  a{color:var(--teal);text-decoration:none;}
+  .wrap{max-width:760px;margin:0 auto;padding:40px 2rem 60px;}
+  .welcome{margin-bottom:32px;}
+  .welcome h1{font-size:1.7rem;font-weight:800;color:var(--white);margin-bottom:4px;}
+  .welcome p{font-size:14px;color:var(--muted);}
+  .stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:32px;}
+  .stat{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px;text-align:center;}
+  .stat-num{font-size:1.8rem;font-weight:800;color:var(--teal);line-height:1;margin-bottom:4px;}
+  .stat-label{font-size:12px;color:var(--muted);}
+  .section-title{font-size:16px;font-weight:700;color:var(--white);margin-bottom:16px;}
+  .course-row{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 18px;display:flex;align-items:center;gap:14px;margin-bottom:10px;transition:border-color 0.2s;}
+  .course-row:hover{border-color:var(--teal);}
+  .course-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+  .t1{background:#134e4a;} .t2{background:#1e3a5f;} .t3{background:#4a1942;} .t4{background:#451a03;} .t5{background:#1a3a1a;} .t6{background:#3a2a1a;}
+  .course-info{flex:1;}
+  .course-name{font-size:14px;font-weight:700;color:var(--white);margin-bottom:2px;}
+  .course-prog{font-size:12px;color:var(--muted);}
+  .progress-bar{height:5px;background:var(--border);border-radius:999px;margin-top:6px;overflow:hidden;}
+  .progress-fill{height:100%;background:var(--teal);border-radius:999px;transition:width 0.5s;}
+  .course-action{font-size:12px;font-weight:600;}
+  .btn-sijil{background:#0d2926;color:var(--teal-light);border:1px solid var(--teal-dim);padding:6px 14px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;}
+  .btn-sijil:hover{background:var(--teal);color:#fff;}
+  .btn-terus{background:var(--teal);color:#fff;border:none;padding:6px 14px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;}
+  .btn-terus:hover{background:var(--teal-dim);}
+  .empty-state{text-align:center;padding:40px;color:var(--muted);background:var(--surface);border:1px dashed var(--border);border-radius:14px;}
+  .empty-state a{color:var(--teal);}
+  footer{border-top:1px solid var(--border);padding:24px 2rem;text-align:center;color:var(--muted);font-size:12px;max-width:760px;margin:0 auto;}
+  @media(max-width:560px){.stats-row{grid-template-columns:1fr 1fr;}}
+</style>
+</head>
+<body>
+<nav id="main-nav"></nav>
+
+<div class="wrap">
+  <div class="welcome">
+    <h1 id="welcomeMsg">Selamat Datang!</h1>
+    <p>Teruskan perjalanan pembelajaran anda hari ini.</p>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat"><div class="stat-num" id="statDaftar">0</div><div class="stat-label">Kursus Didaftar</div></div>
+    <div class="stat"><div class="stat-num" id="statSelesai">0</div><div class="stat-label">Kursus Selesai</div></div>
+    <div class="stat"><div class="stat-num" id="statSijil">0</div><div class="stat-label">Sijil Diperoleh</div></div>
+  </div>
+
+  <div class="section-title">Kursus Saya</div>
+  <div id="kursusList"></div>
+</div>
+
+<footer>&copy; 2025 KomunitiKu @ KKBM &middot; <a href="kursus.html">Cari Kursus Baru</a></footer>
+
+<script src="nav.js"></script>
+<script>
+var kursusData=[
+  {id:1,icon:'💻',bg:'t1',title:'Asas Literasi Digital',modul:6},
+  {id:2,icon:'📊',bg:'t2',title:'Microsoft Excel Intermediate',modul:8},
+  {id:3,icon:'🎨',bg:'t3',title:'Reka Bentuk Grafik Asas',modul:5},
+  {id:4,icon:'🛒',bg:'t4',title:'e-Dagang untuk Usahawan',modul:10},
+  {id:5,icon:'📱',bg:'t5',title:'Pengurusan Media Sosial',modul:4},
+  {id:6,icon:'🍳',bg:'t6',title:'Keusahawanan Makanan & Minuman',modul:6}
+];
+var user=JSON.parse(localStorage.getItem('kkbm_user')||'null');
+if(!user){window.location='login.html';}
+else{
+  document.getElementById('welcomeMsg').textContent='Selamat Datang, '+user.nama.split(' ')[0]+'! 👋';
+}
+
+var enrolled=JSON.parse(localStorage.getItem('enrolled')||'[]');
+var progress=JSON.parse(localStorage.getItem('progress')||'{}');
+
+function initProgress(){
+  enrolled.forEach(function(id){
+    if(!progress[id]){progress[id]=Math.floor(Math.random()*70)+10;}
+  });
+  localStorage.setItem('progress',JSON.stringify(progress));
+}
+initProgress();
+
+var selesai=enrolled.filter(function(id){return(progress[id]||0)>=100;}).length;
+document.getElementById('statDaftar').textContent=enrolled.length;
+document.getElementById('statSelesai').textContent=selesai;
+document.getElementById('statSijil').textContent=selesai;
+
+var list=document.getElementById('kursusList');
+if(!enrolled.length){
+  list.innerHTML='<div class="empty-state">&#128218; Anda belum mendaftar mana-mana kursus.<br/><br/><a href="kursus.html">Terokai kursus sekarang &rarr;</a></div>';
+}else{
+  list.innerHTML=enrolled.map(function(id){
+    var k=kursusData.find(function(x){return x.id===id;})||{id:id,icon:'📚',bg:'t1',title:'Kursus #'+id,modul:6};
+    var prog=progress[id]||0;
+    var done=prog>=100;
+    return '<div class="course-row">'+
+      '<div class="course-icon '+k.bg+'">'+k.icon+'</div>'+
+      '<div class="course-info">'+
+        '<div class="course-name">'+k.title+'</div>'+
+        '<div class="course-prog">'+(done?'Selesai':'Dalam Kemajuan')+' &middot; '+prog+'%</div>'+
+        '<div class="progress-bar"><div class="progress-fill" style="width:'+prog+'%"></div></div>'+
+      '</div>'+
+      (done
+        ? '<button class="btn-sijil" onclick="window.location=\'sijil.html?id='+k.id+'\'">&#127941; Sijil</button>'
+        : '<button class="btn-terus" onclick="terusKursus('+k.id+')">Teruskan &rarr;</button>'
+      )+
+    '</div>';
+  }).join('');
+}
+
+function terusKursus(id){
+  var prog=JSON.parse(localStorage.getItem('progress')||'{}');
+  prog[id]=Math.min(100,(prog[id]||0)+20);
+  localStorage.setItem('progress',JSON.stringify(prog));
+  if(prog[id]>=100){
+    alert('Tahniah! Anda telah menyiapkan kursus ini! Sijil anda sedia untuk dimuat turun.');
+  }
+  window.location.reload();
+}
+
+function logout(){
+  localStorage.removeItem('kkbm_user');
+  window.location='index.html';
+}
+</script>
+</body>
+</html>

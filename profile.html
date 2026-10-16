@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Profil Saya &mdash; KomunitiKu @ KKBM</title>
+<link rel="stylesheet" href="nav.css"/>
+<link rel="stylesheet" href="design.css"/>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  :root{--bg:#0d1117;--surface:#161b22;--border:#2d3748;--teal:#14b8a6;--teal-light:#2dd4bf;--teal-dim:#0d9488;--text:#e2e8f0;--muted:#8b949e;--white:#fff;--red:#f87171;--green:#4ade80;}
+  body{font-family:-apple-system,"Segoe UI",system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;font-size:15px;}
+  a{color:var(--teal);text-decoration:none;}
+  .wrap{max-width:760px;margin:0 auto;padding:40px 2rem 60px;}
+  .page-title{font-size:1.8rem;font-weight:800;color:var(--white);margin-bottom:6px;}
+  .page-sub{font-size:14px;color:var(--muted);margin-bottom:32px;}
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:24px;margin-bottom:18px;}
+  .card h2{font-size:15px;font-weight:700;color:var(--white);margin-bottom:18px;display:flex;align-items:center;gap:8px;}
+  .avatar-row{display:flex;align-items:center;gap:18px;margin-bottom:24px;}
+  .avatar-circle{width:72px;height:72px;background:var(--teal);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:800;color:#fff;flex-shrink:0;}
+  .avatar-info{flex:1;}
+  .avatar-name{font-size:1.1rem;font-weight:700;color:var(--white);}
+  .avatar-email{font-size:13px;color:var(--muted);}
+  .avatar-badge{display:inline-block;background:#0d2926;color:var(--teal-light);font-size:10px;font-weight:700;padding:3px 10px;border-radius:999px;text-transform:uppercase;letter-spacing:0.06em;margin-top:4px;}
+  .form-group{margin-bottom:16px;}
+  label{display:block;font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px;}
+  input,select{width:100%;background:#0d1117;border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-size:14px;outline:none;transition:border-color 0.2s;}
+  input:focus,select:focus{border-color:var(--teal);}
+  select option{background:#0d1117;}
+  .btn{background:var(--teal);color:#fff;font-weight:700;font-size:14px;padding:10px 24px;border-radius:10px;border:none;cursor:pointer;transition:background 0.2s;}
+  .btn:hover{background:var(--teal-dim);}
+  .btn-danger{background:transparent;color:var(--red);border:1px solid var(--red);font-weight:600;font-size:13px;padding:8px 18px;border-radius:10px;cursor:pointer;transition:background 0.2s;}
+  .btn-danger:hover{background:rgba(248,113,113,0.1);}
+  .msg{display:none;padding:10px 14px;border-radius:10px;font-size:13px;margin-bottom:14px;}
+  .msg.success{background:#0d2926;border:1px solid var(--teal-dim);color:var(--teal-light);}
+  /* enrolled courses */
+  .course-row{display:flex;align-items:center;gap:14px;padding:14px;background:#0d1117;border-radius:10px;border:1px solid var(--border);margin-bottom:10px;}
+  .course-icon{width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+  .t1{background:#134e4a;}.t2{background:#1e3a5f;}.t3{background:#4a1942;}.t4{background:#451a03;}.t5{background:#1a3a1a;}.t6{background:#3a2a1a;}
+  .course-info{flex:1;}
+  .course-name{font-size:13px;font-weight:700;color:var(--white);}
+  .course-prog{font-size:11px;color:var(--muted);}
+  .prog-bar{height:4px;background:var(--border);border-radius:999px;margin-top:5px;}
+  .prog-fill{height:100%;background:var(--teal);border-radius:999px;}
+  .badge-done{background:#0a2010;color:var(--green);font-size:10px;font-weight:700;padding:3px 8px;border-radius:999px;}
+  .stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px;}
+  .stat-mini{background:#0d1117;border:1px solid var(--border);border-radius:12px;padding:14px;text-align:center;}
+  .stat-mini-num{font-size:1.4rem;font-weight:800;color:var(--teal);}
+  .stat-mini-label{font-size:11px;color:var(--muted);}
+  footer{border-top:1px solid var(--border);padding:24px 2rem;text-align:center;color:var(--muted);font-size:12px;max-width:760px;margin:0 auto;}
+  @media(max-width:600px){.grid-2{grid-template-columns:1fr;}.stat-row{grid-template-columns:1fr 1fr;}}
+</style>
+</head>
+<body>
+<nav id="main-nav"></nav>
+
+<div class="wrap">
+  <div class="page-title">&#128100; Profil Saya</div>
+  <div class="page-sub">Urus maklumat akaun dan lihat kemajuan pembelajaran anda.</div>
+
+  <!-- Avatar & Stats -->
+  <div class="card">
+    <div class="avatar-row">
+      <div class="avatar-circle" id="avatarCircle">?</div>
+      <div class="avatar-info">
+        <div class="avatar-name" id="profileName">-</div>
+        <div class="avatar-email" id="profileEmail">-</div>
+        <div class="avatar-badge" id="profileRole">Pelajar</div>
+      </div>
+    </div>
+    <div class="stat-row">
+      <div class="stat-mini"><div class="stat-mini-num" id="sDaftar">0</div><div class="stat-mini-label">Kursus Didaftar</div></div>
+      <div class="stat-mini"><div class="stat-mini-num" id="sSelesai">0</div><div class="stat-mini-label">Selesai</div></div>
+      <div class="stat-mini"><div class="stat-mini-num" id="sSijil">0</div><div class="stat-mini-label">Sijil</div></div>
+    </div>
+  </div>
+
+  <!-- Edit Profile -->
+  <div class="card">
+    <h2>&#9999;&#65039; Kemaskini Maklumat</h2>
+    <div class="msg" id="editMsg"></div>
+    <div class="grid-2">
+      <div class="form-group"><label>Nama Penuh</label><input type="text" id="editNama" placeholder="Nama penuh anda"/></div>
+      <div class="form-group"><label>No. Telefon</label><input type="tel" id="editTel" placeholder="01X-XXXXXXX"/></div>
+    </div>
+    <div class="grid-2">
+      <div class="form-group"><label>Kawasan</label>
+        <select id="editKawasan">
+          <option value="">-- Pilih Kawasan --</option>
+          <option>Bukit Mertajam</option><option>Butterworth</option><option>Kepala Batas</option><option>Nibong Tebal</option><option>Lain-lain</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Emel (tidak boleh diubah)</label><input type="email" id="editEmel" disabled style="opacity:0.5;cursor:not-allowed;"/></div>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+      <button class="btn" onclick="saveProfile()">Simpan Perubahan</button>
+      <button class="btn-danger" onclick="confirmLogout()">Log Keluar</button>
+    </div>
+  </div>
+
+  <!-- Enrolled Courses -->
+  <div class="card">
+    <h2>&#128218; Kursus Saya</h2>
+    <div id="profileCourses"></div>
+  </div>
+</div>
+
+<footer>&copy; 2025 KomunitiKu @ KKBM &middot; <a href="dashboard.html">Dashboard</a></footer>
+
+<script>
+var kursusData=[
+  {id:1,icon:'💻',bg:'t1',title:'Asas Literasi Digital'},
+  {id:2,icon:'📊',bg:'t2',title:'Microsoft Excel Intermediate'},
+  {id:3,icon:'🎨',bg:'t3',title:'Reka Bentuk Grafik Asas'},
+  {id:4,icon:'🛒',bg:'t4',title:'e-Dagang untuk Usahawan'},
+  {id:5,icon:'📱',bg:'t5',title:'Pengurusan Media Sosial'},
+  {id:6,icon:'🍳',bg:'t6',title:'Keusahawanan Makanan & Minuman'}
+];
+
+var user = JSON.parse(localStorage.getItem('kkbm_user') || 'null');
+if (!user) { window.location = 'login.html'; }
+
+function initials(name) { return (name||'U').split(' ').slice(0,2).map(function(w){return w[0];}).join('').toUpperCase(); }
+
+function load() {
+  user = JSON.parse(localStorage.getItem('kkbm_user') || 'null');
+  if (!user) { window.location = 'login.html'; return; }
+  document.getElementById('avatarCircle').textContent = initials(user.nama);
+  document.getElementById('profileName').textContent = user.nama || '-';
+  document.getElementById('profileEmail').textContent = user.emel || '-';
+  document.getElementById('profileRole').textContent = user.role === 'admin' ? 'Admin' : 'Pelajar';
+  document.getElementById('editNama').value = user.nama || '';
+  document.getElementById('editTel').value = user.tel || '';
+  document.getElementById('editEmel').value = user.emel || '';
+  var sel = document.getElementById('editKawasan');
+  for (var i = 0; i < sel.options.length; i++) { if (sel.options[i].text === user.kawasan) { sel.selectedIndex = i; break; } }
+
+  var enrolled = JSON.parse(localStorage.getItem('enrolled') || '[]');
+  var progress = JSON.parse(localStorage.getItem('progress') || '{}');
+  var selesai = enrolled.filter(function(id){ return (progress[id]||0)>=100; }).length;
+  document.getElementById('sDaftar').textContent = enrolled.length;
+  document.getElementById('sSelesai').textContent = selesai;
+  document.getElementById('sSijil').textContent = selesai;
+
+  var pc = document.getElementById('profileCourses');
+  if (!enrolled.length) {
+    pc.innerHTML = '<div style="text-align:center;padding:24px;color:var(--muted);">Anda belum mendaftar mana-mana kursus. <a href="kursus.html">Terokai kursus</a></div>';
+  } else {
+    pc.innerHTML = enrolled.map(function(id) {
+      var k = kursusData.find(function(x){return x.id===id;}) || {id:id,icon:'📚',bg:'t1',title:'Kursus #'+id};
+      var prog = progress[id] || 0;
+      var done = prog >= 100;
+      return '<div class="course-row">' +
+        '<div class="course-icon '+k.bg+'">'+k.icon+'</div>' +
+        '<div class="course-info">' +
+          '<div class="course-name">'+k.title+'</div>' +
+          '<div class="course-prog">'+prog+'% selesai</div>' +
+          '<div class="prog-bar"><div class="prog-fill" style="width:'+prog+'%"></div></div>' +
+        '</div>' +
+        (done ? '<span class="badge-done">&#10003; Sijil</span>' : '') +
+        '<a href="kursus-detail.html?id='+k.id+'" style="font-size:12px;color:var(--teal);margin-left:8px;">Lihat</a>' +
+      '</div>';
+    }).join('');
+  }
+}
+
+function saveProfile() {
+  var nama = document.getElementById('editNama').value.trim();
+  var tel = document.getElementById('editTel').value.trim();
+  var kaw = document.getElementById('editKawasan').value;
+  var msg = document.getElementById('editMsg');
+  if (!nama) { msg.className='msg error'; msg.style.display='block'; msg.textContent='Nama tidak boleh kosong.'; return; }
+  user.nama = nama; user.tel = tel; user.kawasan = kaw;
+  localStorage.setItem('kkbm_user', JSON.stringify(user));
+  msg.className='msg success'; msg.style.display='block'; msg.textContent='&#10003; Profil berjaya dikemaskini!';
+  setTimeout(function(){ msg.style.display='none'; load(); }, 1500);
+}
+
+function confirmLogout() {
+  if (confirm('Adakah anda pasti mahu log keluar?')) {
+    localStorage.removeItem('kkbm_user');
+    window.location = 'index.html';
+  }
+}
+
+load();
+</script>
+<script src="logo.js"></script>
+<script src="nav.js"></script>
+<script src="ui.js"></script>
+</body>
+</html>

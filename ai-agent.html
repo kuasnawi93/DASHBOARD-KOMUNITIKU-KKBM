@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>AI Agent Panel &mdash; KomunitiKu Admin</title>
+<link rel="stylesheet" href="nav.css"/>
+<link rel="stylesheet" href="design.css"/>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  :root{--bg:#0d1117;--surface:#161b22;--border:#2d3748;--teal:#14b8a6;--teal-light:#2dd4bf;--teal-dim:#0d9488;--text:#e2e8f0;--muted:#8b949e;--white:#fff;--yellow:#fbbf24;--green:#4ade80;--red:#f87171;--purple:#a78bfa;}
+  body{font-family:-apple-system,"Segoe UI",system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;font-size:15px;display:flex;flex-direction:column;min-height:100vh;}
+  a{color:var(--teal);text-decoration:none;}
+  .layout{display:grid;grid-template-columns:260px 1fr;gap:0;flex:1;max-width:1100px;margin:0 auto;padding:28px 2rem 0;width:100%;}
+  /* Sidebar */
+  .sidebar{border-right:1px solid var(--border);padding-right:20px;}
+  .sidebar-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:12px;}
+  .agent-badge{display:flex;align-items:center;gap:10px;background:#1a0f00;border:1px solid #78350f;border-radius:12px;padding:14px;margin-bottom:20px;}
+  .agent-avatar{width:44px;height:44px;background:#b45309;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;}
+  .agent-name{font-size:13px;font-weight:700;color:var(--white);}
+  .agent-status{font-size:11px;color:var(--green);display:flex;align-items:center;gap:4px;}
+  .agent-status::before{content:'●';font-size:8px;}
+  .sidebar-menu{display:flex;flex-direction:column;gap:4px;margin-bottom:20px;}
+  .menu-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:9px;font-size:13px;cursor:pointer;color:var(--muted);border:none;background:transparent;width:100%;text-align:left;transition:background 0.2s,color 0.2s;}
+  .menu-item:hover,.menu-item.active{background:rgba(20,184,166,0.08);color:var(--teal);}
+  .menu-item .icon{font-size:16px;width:20px;text-align:center;}
+  .status-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:12px;}
+  .status-item{display:flex;align-items:center;justify-content:space-between;padding:6px 0;font-size:12px;border-bottom:1px solid var(--border);}
+  .status-item:last-child{border-bottom:none;}
+  .status-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+  .dot-green{background:var(--green);}
+  .dot-yellow{background:var(--yellow);}
+  .dot-red{background:var(--red);}
+  /* Main area */
+  .main{padding-left:24px;display:flex;flex-direction:column;}
+  .main-header{margin-bottom:20px;}
+  .main-header h1{font-size:1.4rem;font-weight:800;color:var(--white);margin-bottom:4px;}
+  .main-header p{font-size:13px;color:var(--muted);}
+  /* Chat/console */
+  .console-window{background:var(--surface);border:1px solid var(--border);border-radius:14px 14px 0 0;padding:20px;flex:1;overflow-y:auto;min-height:350px;max-height:440px;display:flex;flex-direction:column;gap:12px;}
+  .log-row{display:flex;align-items:flex-start;gap:10px;}
+  .log-row.agent{flex-direction:row;}
+  .log-row.admin{flex-direction:row-reverse;}
+  .log-avatar{width:30px;height:30px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0;}
+  .log-avatar.agent{background:#b45309;}
+  .log-avatar.admin{background:#1e3a5f;}
+  .log-avatar.system{background:#1a1a2e;font-size:12px;}
+  .log-bubble{max-width:80%;padding:10px 14px;border-radius:10px;font-size:13px;line-height:1.6;}
+  .log-bubble.agent{background:#1a0f00;border:1px solid #78350f;color:var(--text);}
+  .log-bubble.admin{background:#1e3a5f;border:1px solid #1e40af;color:var(--text);}
+  .log-bubble.system{background:#0d1117;border:1px solid var(--border);color:var(--muted);font-style:italic;font-size:12px;}
+  .log-bubble.success{background:#0a2010;border:1px solid #166534;color:var(--green);}
+  .log-bubble.warning{background:#1c1500;border:1px solid #78350f;color:var(--yellow);}
+  .log-time{font-size:10px;color:var(--muted);margin-top:3px;}
+  /* Quick actions */
+  .quick-actions{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:14px;background:var(--surface);border:1px solid var(--border);border-top:none;border-bottom:none;}
+  .qa-btn{background:#0d1117;border:1px solid var(--border);color:var(--text);font-size:12px;font-weight:600;padding:8px 10px;border-radius:8px;cursor:pointer;transition:all 0.2s;text-align:left;display:flex;align-items:center;gap:6px;}
+  .qa-btn:hover{border-color:var(--teal);color:var(--teal);}
+  /* Input */
+  .console-input-bar{background:var(--surface);border:1px solid var(--border);border-top:none;border-radius:0 0 14px 14px;padding:12px;display:flex;gap:10px;margin-bottom:24px;}
+  .console-input{flex:1;background:#0d1117;border:1px solid var(--border);border-radius:9px;padding:9px 14px;color:var(--text);font-size:13px;outline:none;font-family:inherit;}
+  .console-input:focus{border-color:var(--yellow);}
+  .console-send{background:#b45309;color:var(--white);border:none;border-radius:9px;padding:9px 16px;font-weight:700;font-size:13px;cursor:pointer;transition:background 0.2s;}
+  .console-send:hover{background:#d97706;}
+  .typing{display:flex;align-items:center;gap:4px;padding:4px 0;}
+  .typing span{width:5px;height:5px;background:var(--yellow);border-radius:50%;animation:bounce 1.2s infinite;}
+  .typing span:nth-child(2){animation-delay:0.2s;}
+  .typing span:nth-child(3){animation-delay:0.4s;}
+  @keyframes bounce{0%,60%,100%{transform:translateY(0);}30%{transform:translateY(-6px);}}
+  footer{border-top:1px solid var(--border);padding:20px 2rem;text-align:center;color:var(--muted);font-size:12px;margin-top:auto;}
+  @media(max-width:700px){.layout{grid-template-columns:1fr;}.sidebar{border-right:none;padding-right:0;border-bottom:1px solid var(--border);padding-bottom:16px;margin-bottom:16px;}.main{padding-left:0;}.quick-actions{grid-template-columns:repeat(2,1fr);}}
+</style>
+</head>
+<body>
+<nav id="main-nav"></nav>
+
+<div class="layout">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="agent-badge">
+      <div class="agent-avatar">🤖</div>
+      <div>
+        <div class="agent-name">KomunitiKu AI Agent</div>
+        <div class="agent-status">Online &amp; Aktif</div>
+      </div>
+    </div>
+
+    <div class="sidebar-title">Kawalan Agen</div>
+    <div class="sidebar-menu">
+      <button class="menu-item active" onclick="setMode('chat',this)"><span class="icon">💬</span> Chat &amp; Arahan</button>
+      <button class="menu-item" onclick="setMode('diagnose',this)"><span class="icon">🔍</span> Diagnostik</button>
+      <button class="menu-item" onclick="setMode('data',this)"><span class="icon">📊</span> Analisa Data</button>
+      <button class="menu-item" onclick="setMode('content',this)"><span class="icon">✏️</span> Jana Kandungan</button>
+      <button class="menu-item" onclick="setMode('report',this)"><span class="icon">📄</span> Jana Laporan</button>
+    </div>
+
+    <div class="sidebar-title">Status Sistem</div>
+    <div class="status-card">
+      <div class="status-item"><span>Platform</span><span style="display:flex;align-items:center;gap:4px;"><span class="status-dot dot-green"></span><span style="color:var(--green);font-size:11px;">Online</span></span></div>
+      <div class="status-item"><span>Database</span><span style="display:flex;align-items:center;gap:4px;"><span class="status-dot dot-green"></span><span style="color:var(--green);font-size:11px;">Aktif</span></span></div>
+      <div class="status-item"><span>Pembayaran</span><span style="display:flex;align-items:center;gap:4px;"><span class="status-dot dot-green"></span><span style="color:var(--green);font-size:11px;">Normal</span></span></div>
+      <div class="status-item"><span>Sijil Engine</span><span style="display:flex;align-items:center;gap:4px;"><span class="status-dot dot-green"></span><span style="color:var(--green);font-size:11px;">Ready</span></span></div>
+      <div class="status-item"><span>AI Helpdesk</span><span style="display:flex;align-items:center;gap:4px;"><span class="status-dot dot-green"></span><span style="color:var(--green);font-size:11px;">Online</span></span></div>
+    </div>
+
+    <div class="sidebar-title">Pautan Pantas</div>
+    <div class="sidebar-menu">
+      <a class="menu-item" href="dashboard-admin.html"><span class="icon">📊</span> Admin Dashboard</a>
+      <a class="menu-item" href="kursus.html"><span class="icon">📚</span> Senarai Kursus</a>
+      <a class="menu-item" href="ai-helpdesk.html"><span class="icon">🎓</span> AI Helpdesk Pelajar</a>
+    </div>
+  </div>
+
+  <!-- Main Console -->
+  <div class="main">
+    <div class="main-header">
+      <h1 id="modeTitle">💬 Chat &amp; Arahan kepada AI Agent</h1>
+      <p id="modeDesc">Beri arahan kepada AI Agent untuk urus platform, jana laporan, atau troubleshoot masalah.</p>
+    </div>
+
+    <div class="console-window" id="consoleWindow">
+      <div class="log-row agent">
+        <div class="log-avatar agent">🤖</div>
+        <div>
+          <div class="log-bubble agent">Assalamualaikum Admin! Saya <strong>KomunitiKu AI Agent</strong> — sistem agentic AI untuk pengurusan platform PSH KKBM.<br/><br/>Saya boleh membantu anda dengan:<br/>🔧 <strong>Front-end</strong> — troubleshoot UI, semak broken links, cadang penambahbaikan<br/>⚙️ <strong>Back-end</strong> — monitor data, jana laporan, semak sistem<br/>📊 <strong>Analytics</strong> — analisa trend pelajar, pendapatan, penyelesaian kursus<br/>✏️ <strong>Content</strong> — draft pengumuman, notifikasi, deskripsi kursus<br/><br/>Apa yang boleh saya bantu hari ini?</div>
+          <div class="log-time">AI Agent &middot; Sekarang</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="quick-actions">
+      <button class="qa-btn" onclick="quickAction('Sila generate laporan jumlah pelajar dan income bulan ini.')">📈 Laporan Bulanan</button>
+      <button class="qa-btn" onclick="quickAction('Semak status sistem dan kenal pasti sebarang isu.')">🔍 Semak Sistem</button>
+      <button class="qa-btn" onclick="quickAction('Senaraikan pelajar yang belum selesai kursus lebih dari 30 hari.')">⚠️ Pelajar Tidak Aktif</button>
+      <button class="qa-btn" onclick="quickAction('Jana pengumuman baharu untuk kursus minggu hadapan.')">📢 Jana Pengumuman</button>
+      <button class="qa-btn" onclick="quickAction('Analisa kursus mana paling popular dan cadangkan strategi.')">💡 Cadangan Strategi</button>
+      <button class="qa-btn" onclick="quickAction('Semak semua butang dan pautan platform, lapor yang rosak.')">🔧 Audit Front-End</button>
+    </div>
+
+    <div class="console-input-bar">
+      <input type="text" class="console-input" id="consoleInput" placeholder="Beri arahan kepada AI Agent..." onkeydown="if(event.key==='Enter')sendConsole();"/>
+      <button class="console-send" onclick="sendConsole()">Jalankan &#9654;</button>
+    </div>
+  </div>
+</div>
+
+<footer>&copy; 2025 KomunitiKu @ KKBM &middot; AI Agent Panel v1.0 &middot; Untuk kegunaan Admin sahaja</footer>
+
+<script>
+var user = JSON.parse(localStorage.getItem('kkbm_user') || 'null');
+if (!user || user.role !== 'admin') { window.location = 'login.html'; }
+
+var now = function(){ return new Date().toLocaleTimeString('ms-MY',{hour:'2-digit',minute:'2-digit'}); };
+var msgCount = 0;
+
+// AI Agent Knowledge Base
+var AGENT_KB = [
+  {keys:['laporan','report','bulanan','monthly','income','pendapatan'],
+   reply:'📊 <strong>Laporan Bulanan — Jun 2025</strong><br/><br/>✅ Pelajar Baru: <strong>+47</strong><br/>✅ Kursus Diselesaikan: <strong>+89</strong><br/>✅ Sijil Dikeluarkan: <strong>+41</strong><br/>💰 Income Bulan Ini: <strong style="color:#4ade80;">RM 3,400</strong><br/>📈 Pertumbuhan: <strong>+12%</strong> berbanding bulan lepas<br/><br/>Kursus paling popular bulan ini: <strong>Pengurusan Media Sosial</strong> (67 pendaftaran baru)',type:'success'},
+  {keys:['sistem','system','status','semak','check','health'],
+   reply:'🔍 <strong>Laporan Diagnostik Sistem</strong><br/><br/><span style="color:#4ade80;">✅ Platform — Online (99.8% uptime)</span><br/><span style="color:#4ade80;">✅ Database — Berfungsi normal</span><br/><span style="color:#4ade80;">✅ Modul Sijil — Ready</span><br/><span style="color:#4ade80;">✅ AI Helpdesk — Aktif</span><br/><span style="color:#fbbf24;">⚠️ Cache — Disyorkan clear setiap 72 jam</span><br/><br/>Tiada isu kritikal dijumpai. Sistem berjalan lancar.',type:'success'},
+  {keys:['tidak aktif','inactive','30 hari','abandoned','belum selesai'],
+   reply:'⚠️ <strong>Pelajar Tidak Aktif (&gt;30 hari)</strong><br/><br/>• Mohd Khalid — Asas Literasi Digital (45 hari)<br/>• Nor Azila — Microsoft Excel (38 hari)<br/>• Hafiz Ahmad — e-Dagang (52 hari)<br/><br/><strong>Cadangan AI:</strong> Hantar emel peringatan automatik kepada 3 pelajar ini. Mahu saya draftkan emel tersebut?',type:'warning'},
+  {keys:['pengumuman','announcement','notif','berita','news'],
+   reply:'📢 <strong>Draf Pengumuman Baru</strong><br/><br/>"Salam komuniti KomunitiKu! Kursus baharu <strong>Kecerdasan Buatan Asas</strong> kini dibuka untuk pendaftaran. Daftar sekarang di platform kami dan dapatkan sijil rasmi KKBM! 🎓 Tempat terhad — <a href=\'kursus.html\'>Daftar di sini</a>"<br/><br/>✅ Draf selesai. Mahu saya publish ke halaman utama?',type:'success'},
+  {keys:['strategi','strategy','popular','cadang','suggest','recommend'],
+   reply:'💡 <strong>Analisa &amp; Cadangan Strategik</strong><br/><br/><strong>Top 3 Kursus:</strong><br/>1. Pengurusan Media Sosial — 90% completion<br/>2. Reka Bentuk Grafik — 92% completion<br/>3. Asas Literasi Digital — 85% completion<br/><br/><strong>Cadangan AI:</strong><br/>• Buka kursus <em>advanced</em> untuk kursus popular<br/>• Bina pakej bundel: Media Sosial + Grafik<br/>• Tawar sijil bersiri untuk meningkatkan retention',type:'success'},
+  {keys:['audit','front','frontend','ui','broken','rosak','link','butang'],
+   reply:'🔧 <strong>Laporan Audit Front-End</strong><br/><br/><span style="color:#4ade80;">✅ Navigasi — Semua links berfungsi</span><br/><span style="color:#4ade80;">✅ Butang CTA — Aktif</span><br/><span style="color:#4ade80;">✅ Form Pendaftaran — Validasi betul</span><br/><span style="color:#4ade80;">✅ Mobile responsive — OK</span><br/><span style="color:#fbbf24;">⚠️ Gambar kursus — Cadang tambah thumbnail sebenar</span><br/><span style="color:#fbbf24;">⚠️ Loading — Cadang lazy load untuk halaman kursus</span>',type:'success'},
+  {keys:['pelajar','peserta','student','user'],
+   reply:'👥 <strong>Ringkasan Pelajar Semasa</strong><br/><br/>Jumlah Berdaftar: <strong>1,247</strong><br/>Aktif (30 hari): <strong>892</strong><br/>Tidak Aktif: <strong>355</strong><br/>Kadar Penyelesaian: <strong>68%</strong><br/><br/>Kawasan paling ramai: Bukit Mertajam (412), Butterworth (287), Kepala Batas (198)',type:'success'},
+];
+
+function getAgentReply(msg) {
+  var lower = msg.toLowerCase();
+  for (var i = 0; i < AGENT_KB.length; i++) {
+    for (var j = 0; j < AGENT_KB[i].keys.length; j++) {
+      if (lower.indexOf(AGENT_KB[i].keys[j]) >= 0) return AGENT_KB[i];
+    }
+  }
+  return {reply:'Arahan diterima. Saya sedang memproses permintaan anda...<br/><br/>Untuk fungsi lanjutan, AI Agent akan diintegrasikan dengan IBM watsonx dalam versi seterusnya. Sementara itu, saya boleh membantu dengan laporan, diagnostik, analitik, dan penjanaan kandungan.<br/><br/>Cuba salah satu butang arahan pantas di bawah! 👇', type:'agent'};
+}
+
+function addLog(text, role, type) {
+  var cw = document.getElementById('consoleWindow');
+  var avatars = {agent:'🤖', admin: user ? user.nama.charAt(0).toUpperCase() : 'A', system:'⚙'};
+  var div = document.createElement('div');
+  div.className = 'log-row ' + (role==='admin'?'admin':'agent');
+  var bubbleClass = type || role;
+  div.innerHTML =
+    '<div class="log-avatar '+(role==='admin'?'admin':'agent')+'">'+avatars[role]+'</div>' +
+    '<div><div class="log-bubble '+bubbleClass+'">'+text+'</div>' +
+    '<div class="log-time">'+(role==='admin'?'Admin':'AI Agent')+' &middot; '+now()+'</div></div>';
+  cw.appendChild(div);
+  cw.scrollTop = cw.scrollHeight;
+}
+
+function showTyping() {
+  var cw = document.getElementById('consoleWindow');
+  var div = document.createElement('div');
+  div.className = 'log-row agent';
+  div.id = 'typing-indicator';
+  div.innerHTML = '<div class="log-avatar agent">🤖</div><div class="log-bubble agent"><div class="typing"><span></span><span></span><span></span></div></div>';
+  cw.appendChild(div);
+  cw.scrollTop = cw.scrollHeight;
+}
+function removeTyping() {
+  var t = document.getElementById('typing-indicator');
+  if (t) t.remove();
+}
+
+function quickAction(cmd) {
+  addLog(cmd, 'admin');
+  showTyping();
+  var result = getAgentReply(cmd);
+  setTimeout(function() {
+    removeTyping();
+    addLog(result.reply, 'agent', result.type);
+  }, 1000 + Math.random() * 800);
+}
+
+function sendConsole() {
+  var input = document.getElementById('consoleInput');
+  var msg = input.value.trim();
+  if (!msg) return;
+  input.value = '';
+  quickAction(msg);
+}
+
+var MODE_TITLES = {
+  chat:'💬 Chat &amp; Arahan kepada AI Agent',
+  diagnose:'🔍 Diagnostik Sistem',
+  data:'📊 Analisa Data &amp; Laporan',
+  content:'✏️ Jana Kandungan',
+  report:'📄 Jana Laporan Rasmi'
+};
+var MODE_DESCS = {
+  chat:'Beri arahan kepada AI Agent untuk urus platform, jana laporan, atau troubleshoot.',
+  diagnose:'Semak status sistem, front-end, dan back-end platform secara automatik.',
+  data:'Analisa data pelajar, kursus, dan pendapatan dengan AI.',
+  content:'Jana teks pengumuman, notifikasi pelajar, atau deskripsi kursus.',
+  report:'Jana laporan rasmi PDF untuk pihak pengurusan KKBM.'
+};
+function setMode(mode, btn) {
+  document.querySelectorAll('.menu-item').forEach(function(b){b.classList.remove('active');});
+  btn.classList.add('active');
+  document.getElementById('modeTitle').innerHTML = MODE_TITLES[mode];
+  document.getElementById('modeDesc').textContent = MODE_DESCS[mode];
+  var promt = {
+    diagnose:'Jalankan diagnostik penuh sistem platform.',
+    data:'Beri ringkasan analitik data pelajar dan kursus.',
+    content:'Jana contoh pengumuman untuk pelajar.',
+    report:'Jana laporan ringkas prestasi platform bulan ini.'
+  }[mode];
+  if (promt) setTimeout(function(){ quickAction(promt); }, 300);
+}
+</script>
+<script src="logo.js"></script>
+<script src="nav.js"></script>
+<script src="ui.js"></script>
+</body>
+</html>

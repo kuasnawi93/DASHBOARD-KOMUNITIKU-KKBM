@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>KomunitiKu @ KKBM</title>
+<link rel="stylesheet" href="nav.css"/>
+<link rel="stylesheet" href="design.css"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --bg:#0d1117; --surface:#161b22; --border:#2d3748; --teal:#14b8a6; --teal-light:#2dd4bf; --teal-dim:#0d9488; --text:#e2e8f0; --muted:#8b949e; --white:#fff; }
+  body { font-family:-apple-system,"Segoe UI",system-ui,sans-serif; background:var(--bg); color:var(--text); line-height:1.6; font-size:15px; }
+  a { color:var(--teal); text-decoration:none; }
+  .hero { max-width:760px; margin:0 auto; padding:90px 2rem 70px; text-align:center; }
+  .hero-badge { display:inline-flex; align-items:center; gap:8px; background:#0d2926; border:1px solid #0d9488; color:var(--teal-light); font-size:11px; font-weight:700; padding:6px 14px; border-radius:999px; margin-bottom:28px; letter-spacing:0.08em; text-transform:uppercase; }
+  .hero h1 { font-size:2.8rem; font-weight:800; line-height:1.15; color:var(--white); margin-bottom:20px; }
+  .hero h1 span { color:var(--teal); }
+  .hero p { font-size:16px; color:var(--muted); max-width:520px; margin:0 auto 36px; line-height:1.7; }
+  .hero-actions { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
+  .btn-primary { background:var(--teal); color:#fff; font-weight:700; font-size:14px; padding:13px 28px; border-radius:10px; display:inline-block; transition:background 0.2s; }
+  .btn-primary:hover { background:var(--teal-dim); color:#fff; }
+  .btn-secondary { background:transparent; border:1px solid var(--border); color:var(--text); font-weight:600; font-size:14px; padding:13px 28px; border-radius:10px; display:inline-block; transition:border-color 0.2s,color 0.2s; }
+  .btn-secondary:hover { border-color:var(--teal); color:var(--teal); }
+  .stats { max-width:760px; margin:0 auto; padding:0 2rem 70px; display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+  .stat-card { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:24px; text-align:center; }
+  .stat-num { font-size:2rem; font-weight:800; color:var(--teal); line-height:1; margin-bottom:6px; }
+  .stat-label { font-size:12px; color:var(--muted); font-weight:500; }
+  section { max-width:760px; margin:0 auto; padding:60px 2rem; }
+  .section-label { font-size:11px; font-weight:700; color:var(--teal); letter-spacing:0.12em; text-transform:uppercase; margin-bottom:10px; }
+  .section-title { font-size:1.9rem; font-weight:700; color:var(--white); margin-bottom:10px; }
+  .section-sub { font-size:14px; color:var(--muted); margin-bottom:36px; }
+  .steps { display:flex; flex-direction:column; gap:16px; }
+  .step { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:22px 24px; display:flex; align-items:flex-start; gap:18px; transition:border-color 0.2s; cursor:pointer; }
+  .step:hover { border-color:var(--teal); }
+  .step-num { min-width:36px; height:36px; background:var(--teal); border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:800; color:#fff; flex-shrink:0; }
+  .step-title { font-size:15px; font-weight:700; color:var(--white); margin-bottom:4px; }
+  .step-desc { font-size:13px; color:var(--muted); }
+  .features { display:grid; grid-template-columns:repeat(2,1fr); gap:16px; }
+  .feature-card { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:24px; transition:border-color 0.2s,transform 0.15s; }
+  .feature-card:hover { border-color:var(--teal); transform:translateY(-2px); }
+  .feature-icon { width:42px; height:42px; background:#0d2926; border-radius:10px; display:flex; align-items:center; justify-content:center; margin-bottom:14px; font-size:20px; }
+  .feature-title { font-size:14px; font-weight:700; color:var(--white); margin-bottom:6px; }
+  .feature-desc { font-size:13px; color:var(--muted); line-height:1.6; }
+  .courses { display:grid; grid-template-columns:repeat(2,1fr); gap:16px; }
+  .course-card { background:var(--surface); border:1px solid var(--border); border-radius:14px; overflow:hidden; cursor:pointer; transition:border-color 0.2s,transform 0.15s; }
+  .course-card:hover { border-color:var(--teal); transform:translateY(-2px); }
+  .course-thumb { height:80px; display:flex; align-items:center; justify-content:center; font-size:2rem; }
+  .t1{background:#134e4a;} .t2{background:#1e3a5f;} .t3{background:#4a1942;} .t4{background:#451a03;}
+  .course-body { padding:16px; }
+  .course-badges { display:flex; gap:6px; margin-bottom:8px; flex-wrap:wrap; }
+  .badge { display:inline-block; font-size:10px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; padding:3px 10px; border-radius:999px; }
+  .badge-free { background:#0d2926; color:var(--teal-light); }
+  .badge-paid { background:#2d1f03; color:#fbbf24; }
+  .course-title { font-size:13px; font-weight:700; color:var(--white); margin-bottom:4px; }
+  .course-meta { font-size:11px; color:var(--muted); }
+  .cta-section { background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:50px 40px; text-align:center; }
+  .cta-section h2 { font-size:1.8rem; font-weight:800; color:var(--white); margin-bottom:12px; }
+  .cta-section p { font-size:14px; color:var(--muted); margin-bottom:28px; }
+  footer { border-top:1px solid var(--border); padding:30px 2rem; text-align:center; color:var(--muted); font-size:12px; max-width:760px; margin:0 auto; }
+  .footer-logo { font-size:14px; font-weight:700; color:var(--white); margin-bottom:8px; }
+  .footer-logo span { color:var(--teal); }
+  .footer-links { display:flex; gap:1.5rem; justify-content:center; margin:12px 0; flex-wrap:wrap; }
+  .footer-links a { color:var(--muted); font-size:12px; }
+  .footer-links a:hover { color:var(--teal); }
+  .made-with { margin-top:20px; padding-top:16px; border-top:1px solid var(--border); font-size:12px; color:var(--muted); }
+  @media(max-width:560px){.stats,.features,.courses{grid-template-columns:1fr;}.hero h1{font-size:2rem;}.cta-section{padding:36px 24px;}}
+</style>
+</head>
+<body>
+
+<nav id="main-nav"></nav>
+
+<div class="hero">
+  <div class="hero-badge">&#9679; Pembelajaran Sepanjang Hayat &middot; KKBM</div>
+  <h1>Belajar Tanpa Sempadan,<br/><span>Grow Without Limits.</span></h1>
+  <p>Platform pembelajaran komuniti oleh Kolej Komuniti Bukit Mertajam. Daftar, belajar, dan dapatkan sijil &mdash; percuma atau berbayar, ikut rentak anda sendiri.</p>
+  <div class="hero-actions">
+    <a href="daftar.html" class="btn-primary">Mulakan Perjalanan &rarr;</a>
+    <a href="kursus.html" class="btn-secondary">Lihat Kursus</a>
+  </div>
+</div>
+
+<div class="stats">
+  <div class="stat-card"><div class="stat-num">1,200+</div><div class="stat-label">Pelajar Berdaftar</div></div>
+  <div class="stat-card"><div class="stat-num">48</div><div class="stat-label">Kursus Tersedia</div></div>
+  <div class="stat-card"><div class="stat-num">850+</div><div class="stat-label">Sijil Dikeluarkan</div></div>
+</div>
+
+<section id="cara-belajar">
+  <div class="section-label">Cara Ia Berfungsi</div>
+  <div class="section-title">Mudah. Pantas. Berkesan.</div>
+  <div class="section-sub">4 langkah mudah untuk mulakan pembelajaran anda hari ini.</div>
+  <div class="steps">
+    <div class="step" onclick="window.location='daftar.html'"><div class="step-num">1</div><div><div class="step-title">Daftar Akaun &mdash; Register</div><div class="step-desc">Buat akaun percuma menggunakan emel anda. Proses pendaftaran mengambil masa kurang dari 2 minit.</div></div></div>
+    <div class="step" onclick="window.location='kursus.html'"><div class="step-num">2</div><div><div class="step-title">Pilih Kursus &mdash; Choose Your Course</div><div class="step-desc">Pilih dari pelbagai kursus F2F atau Online &mdash; percuma mahupun berbayar, mengikut minat dan keperluan anda.</div></div></div>
+    <div class="step"><div class="step-num">3</div><div><div class="step-title">Belajar &mdash; Learn At Your Pace</div><div class="step-desc">Akses modul, video, dan bahan pembelajaran. Hadir kelas F2F atau belajar secara online mengikut jadual anda.</div></div></div>
+    <div class="step" onclick="window.location='sijil.html'"><div class="step-num">4</div><div><div class="step-title">Dapatkan Sijil &mdash; Get Certified</div><div class="step-desc">Selesaikan kursus dan terima sijil rasmi daripada Kolej Komuniti Bukit Mertajam secara automatik.</div></div></div>
+  </div>
+</section>
+
+<section style="padding-top:0;">
+  <div class="section-label">Kenapa KomunitiKu?</div>
+  <div class="section-title">Platform yang Direka untuk Anda.</div>
+  <div class="section-sub">Intelligent, modern, dan mesra pengguna &mdash; untuk komuniti Bukit Mertajam dan sekitarnya.</div>
+  <div class="features">
+    <div class="feature-card"><div class="feature-icon">&#127979;</div><div class="feature-title">F2F + Online Learning</div><div class="feature-desc">Fleksibel &mdash; hadir kelas fizikal atau belajar dari rumah. Pilih mod yang sesuai dengan gaya hidup anda.</div></div>
+    <div class="feature-card"><div class="feature-icon">&#127941;</div><div class="feature-title">Sijil Rasmi KKBM</div><div class="feature-desc">Setiap kursus dilengkapi sijil rasmi daripada Kolej Komuniti Bukit Mertajam &mdash; diiktiraf dan bernilai.</div></div>
+    <div class="feature-card"><div class="feature-icon">&#9200;</div><div class="feature-title">Belajar Ikut Rentak Sendiri</div><div class="feature-desc">Tiada deadline ketat. Akses bahan pembelajaran bila-bila masa, di mana sahaja.</div></div>
+    <div class="feature-card"><div class="feature-icon">&#128176;</div><div class="feature-title">Percuma &amp; Berbayar</div><div class="feature-desc">Mulakan dengan kursus percuma. Tingkatkan kemahiran dengan kursus premium yang berbaloi.</div></div>
+  </div>
+</section>
+
+<section style="padding-top:0;">
+  <div class="section-label">Kursus Pilihan</div>
+  <div class="section-title">Mula Belajar Hari Ini.</div>
+  <div class="section-sub">Pelbagai kursus untuk pelbagai keperluan &mdash; kemahiran, kerjaya, dan kehidupan.</div>
+  <div class="courses">
+    <div class="course-card" onclick="window.location='kursus-detail.html?id=1'"><div class="course-thumb t1">&#128187;</div><div class="course-body"><div class="course-badges"><span class="badge badge-free">Percuma</span><span class="mode-badge mode-online">Online</span></div><div class="course-title">Asas Literasi Digital</div><div class="course-meta">6 Modul &middot; Sijil KKBM</div></div></div>
+    <div class="course-card" onclick="window.location='kursus-detail.html?id=2'"><div class="course-thumb t2">&#128202;</div><div class="course-body"><div class="course-badges"><span class="badge badge-paid">Berbayar</span><span class="mode-badge mode-f2f">F2F</span></div><div class="course-title">Microsoft Excel Intermediate</div><div class="course-meta">8 Modul &middot; Sijil KKBM</div></div></div>
+    <div class="course-card" onclick="window.location='kursus-detail.html?id=3'"><div class="course-thumb t3">&#127912;</div><div class="course-body"><div class="course-badges"><span class="badge badge-free">Percuma</span><span class="mode-badge mode-online">Online</span></div><div class="course-title">Reka Bentuk Grafik Asas</div><div class="course-meta">5 Modul &middot; Sijil KKBM</div></div></div>
+    <div class="course-card" onclick="window.location='kursus-detail.html?id=4'"><div class="course-thumb t4">&#128722;</div><div class="course-body"><div class="course-badges"><span class="badge badge-paid">Berbayar</span><span class="mode-badge mode-f2f">F2F</span></div><div class="course-title">e-Dagang untuk Usahawan</div><div class="course-meta">10 Modul &middot; Sijil KKBM</div></div></div>
+  </div>
+</section>
+
+<section style="padding-top:0;">
+  <div class="cta-section">
+    <h2>Sedia untuk Bermula?</h2>
+    <p>Sertai ribuan ahli komuniti yang telah memulakan perjalanan pembelajaran mereka bersama KomunitiKu @ KKBM.</p>
+    <a href="daftar.html" class="btn-primary">Daftar Percuma Sekarang &rarr;</a>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-logo">Komuniti<span>Ku</span> @ KKBM</div>
+  <div style="font-size:12px;color:#8b949e;margin-bottom:8px;">Kolej Komuniti Bukit Mertajam &middot; Pembelajaran Sepanjang Hayat</div>
+  <div class="footer-links">
+    <a href="kursus.html">Kursus</a><a href="sijil.html">Sijil</a><a href="tentang.html">Tentang Kami</a><a href="tentang.html#hubungi">Hubungi Kami</a><a href="admin.html">Admin</a>
+  </div>
+  <div>&copy; 2025 KomunitiKu @ KKBM. Hak Cipta Terpelihara.</div>
+  <div class="made-with">Made with IBM Bob</div>
+</footer>
+<script src="logo.js"></script>
+<script src="nav.js"></script>
+<script src="ui.js"></script>
+</body>
+</html>

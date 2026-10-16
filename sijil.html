@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Sijil &mdash; KomunitiKu @ KKBM</title>
+<link rel="stylesheet" href="nav.css"/>
+<link rel="stylesheet" href="design.css"/>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  :root{--bg:#0d1117;--surface:#161b22;--border:#2d3748;--teal:#14b8a6;--teal-light:#2dd4bf;--teal-dim:#0d9488;--text:#e2e8f0;--muted:#8b949e;--white:#fff;}
+  body{font-family:-apple-system,"Segoe UI",system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;font-size:15px;}
+  a{color:var(--teal);text-decoration:none;}
+  nav{position:sticky;top:0;z-index:100;background:rgba(13,17,23,0.97);border-bottom:1px solid var(--border);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:64px;}
+  .nav-logo{display:flex;align-items:center;gap:10px;}
+  .nav-logo-icon{width:36px;height:36px;background:var(--teal);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;color:#fff;}
+  .nav-logo-text{font-size:16px;font-weight:700;color:var(--white);}
+  .nav-logo-text span{color:var(--teal);}
+  .wrap{max-width:760px;margin:0 auto;padding:40px 2rem 60px;}
+  .back{font-size:13px;color:var(--muted);margin-bottom:28px;display:inline-flex;align-items:center;gap:6px;}
+  .back:hover{color:var(--teal);}
+  .page-title{font-size:1.8rem;font-weight:800;color:var(--white);margin-bottom:6px;}
+  .page-sub{font-size:14px;color:var(--muted);margin-bottom:32px;}
+
+  /* CERTIFICATE PREVIEW */
+  .cert-wrap{background:#fff;border-radius:16px;padding:4px;margin-bottom:24px;box-shadow:0 0 0 1px rgba(20,184,166,0.3);}
+  .cert{background:#fff;border-radius:13px;padding:48px;text-align:center;position:relative;overflow:hidden;border:3px solid #134e4a;}
+  .cert::before{content:'';position:absolute;top:8px;left:8px;right:8px;bottom:8px;border:1px solid #0d9488;border-radius:8px;pointer-events:none;}
+  .cert-header{margin-bottom:24px;}
+  .cert-logo{width:52px;height:52px;background:var(--teal);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:900;color:#fff;margin:0 auto 12px;}
+  .cert-issuer{font-size:13px;font-weight:700;color:#0d9488;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:2px;}
+  .cert-college{font-size:11px;color:#57606a;letter-spacing:0.05em;}
+  .cert-presented{font-size:13px;color:#57606a;margin:20px 0 8px;font-style:italic;}
+  .cert-name{font-size:2rem;font-weight:800;color:#1f2328;margin-bottom:6px;font-style:italic;}
+  .cert-desc{font-size:13px;color:#57606a;margin-bottom:20px;line-height:1.6;max-width:400px;margin-left:auto;margin-right:auto;}
+  .cert-course{font-size:1.2rem;font-weight:700;color:#0d9488;margin-bottom:20px;padding:10px 20px;border:1px solid #0d9488;border-radius:8px;display:inline-block;}
+  .cert-footer{display:flex;justify-content:space-between;align-items:flex-end;margin-top:28px;padding-top:20px;border-top:1px solid #e5e7eb;}
+  .cert-footer-item{text-align:center;}
+  .cert-date{font-size:12px;color:#57606a;}
+  .cert-date strong{display:block;font-size:13px;color:#1f2328;}
+  .cert-sig{width:80px;height:2px;background:#0d9488;margin:0 auto 4px;}
+  .cert-sig-label{font-size:10px;color:#57606a;text-transform:uppercase;letter-spacing:0.08em;}
+  .cert-num{font-size:10px;color:#8b949e;margin-top:16px;}
+
+  /* ACTIONS */
+  .actions{display:flex;gap:12px;margin-bottom:32px;flex-wrap:wrap;}
+  .btn{background:var(--teal);color:#fff;font-weight:700;font-size:14px;padding:11px 24px;border-radius:10px;border:none;cursor:pointer;transition:background 0.2s;}
+  .btn:hover{background:var(--teal-dim);}
+  .btn-sec{background:transparent;border:1px solid var(--border);color:var(--text);font-weight:600;font-size:14px;padding:11px 24px;border-radius:10px;cursor:pointer;transition:border-color 0.2s,color 0.2s;}
+  .btn-sec:hover{border-color:var(--teal);color:var(--teal);}
+
+  /* HOW IT WORKS */
+  .how-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:24px;margin-bottom:18px;}
+  .how-card h2{font-size:16px;font-weight:700;color:var(--white);margin-bottom:14px;}
+  .step-list{display:flex;flex-direction:column;gap:12px;}
+  .step-item{display:flex;align-items:flex-start;gap:12px;}
+  .step-dot{min-width:28px;height:28px;background:var(--teal);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;}
+  .step-text{font-size:13px;color:var(--muted);padding-top:4px;}
+
+  footer{border-top:1px solid var(--border);padding:24px 2rem;text-align:center;color:var(--muted);font-size:12px;max-width:760px;margin:0 auto;}
+</style>
+</head>
+<body>
+<nav id="main-nav"></nav>
+
+<div class="wrap">
+  <a class="back" href="dashboard.html">&larr; Kembali ke Dashboard</a>
+  <div class="page-title">&#127941; Sijil Anda</div>
+  <div class="page-sub">Sijil rasmi dikeluarkan oleh Kolej Komuniti Bukit Mertajam.</div>
+
+  <!-- CERTIFICATE -->
+  <div class="cert-wrap">
+    <div class="cert" id="certificate">
+      <div class="cert-header">
+        <div class="cert-logo">K</div>
+        <div class="cert-issuer">KomunitiKu @ KKBM</div>
+        <div class="cert-college">Kolej Komuniti Bukit Mertajam &middot; Pembelajaran Sepanjang Hayat</div>
+      </div>
+      <div class="cert-presented">Dengan ini mengesahkan bahawa</div>
+      <div class="cert-name" id="certName">Ahmad Faris</div>
+      <div class="cert-desc">telah berjaya menamatkan kursus dan memenuhi semua keperluan penilaian bagi</div>
+      <div class="cert-course" id="certCourse">Asas Literasi Digital</div>
+      <div class="cert-footer">
+        <div class="cert-footer-item">
+          <div class="cert-date"><strong id="certDate">15 Januari 2025</strong>Tarikh Dikeluarkan</div>
+        </div>
+        <div class="cert-footer-item">
+          <div class="cert-sig"></div>
+          <div class="cert-sig-label">Pengarah, KKBM</div>
+        </div>
+        <div class="cert-footer-item">
+          <div class="cert-date"><strong id="certNo">KKBM/2025/001</strong>No. Sijil</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button class="btn" onclick="printSijil()">&#128438; Muat Turun / Cetak Sijil</button>
+    <button class="btn-sec" onclick="window.location='dashboard.html'">&#8592; Kembali ke Dashboard</button>
+  </div>
+
+  <div class="how-card">
+    <h2>Cara Mendapatkan Sijil</h2>
+    <div class="step-list">
+      <div class="step-item"><div class="step-dot">1</div><div class="step-text">Daftar dan log masuk ke platform KomunitiKu @ KKBM.</div></div>
+      <div class="step-item"><div class="step-dot">2</div><div class="step-text">Pilih dan daftar kursus yang anda minati (percuma atau berbayar).</div></div>
+      <div class="step-item"><div class="step-dot">3</div><div class="step-text">Selesaikan semua modul dan lulus penilaian akhir (sekurang-kurangnya 70%).</div></div>
+      <div class="step-item"><div class="step-dot">4</div><div class="step-text">Sijil rasmi KKBM akan dijana secara automatik dan boleh dimuat turun.</div></div>
+    </div>
+  </div>
+</div>
+
+<footer>&copy; 2025 KomunitiKu @ KKBM &middot; <a href="kursus.html">Cari Lebih Banyak Kursus</a></footer>
+
+<script src="logo.js"></script>
+<script src="nav.js"></script>
+<script src="ui.js"></script>
+<script>
+var kursusData=[
+  {id:1,title:'Asas Literasi Digital'},
+  {id:2,title:'Microsoft Excel Intermediate'},
+  {id:3,title:'Reka Bentuk Grafik Asas'},
+  {id:4,title:'e-Dagang untuk Usahawan'},
+  {id:5,title:'Pengurusan Media Sosial'},
+  {id:6,title:'Keusahawanan Makanan & Minuman'}
+];
+var user=JSON.parse(localStorage.getItem('kkbm_user')||'null');
+var params=new URLSearchParams(window.location.search);
+var kursusId=parseInt(params.get('id'))||1;
+var kursus=kursusData.find(function(k){return k.id===kursusId;})||kursusData[0];
+var today=new Date();
+var months=['Januari','Februari','Mac','April','Mei','Jun','Julai','Ogos','September','Oktober','November','Disember'];
+var dateStr=today.getDate()+' '+months[today.getMonth()]+' '+today.getFullYear();
+var certNo='KKBM/'+today.getFullYear()+'/'+String(Math.floor(Math.random()*900)+100).padStart(3,'0');
+
+if(user){document.getElementById('certName').textContent=user.nama;}
+document.getElementById('certCourse').textContent=kursus.title;
+document.getElementById('certDate').textContent=dateStr;
+document.getElementById('certNo').textContent=certNo;
+
+function printSijil(){
+  var cert=document.getElementById('certificate');
+  var w=window.open('','_blank');
+  w.document.write('<!DOCTYPE html><html><head><title>Sijil KKBM</title><style>');
+  w.document.write('body{margin:0;padding:40px;background:#fff;font-family:-apple-system,sans-serif;}');
+  w.document.write('</style></head><body>');
+  w.document.write(cert.outerHTML);
+  w.document.write('</body></html>');
+  w.document.close();
+  w.print();
+}
+</script>
+</body>
+</html>

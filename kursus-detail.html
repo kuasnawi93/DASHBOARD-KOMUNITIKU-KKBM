@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Detail Kursus &mdash; KomunitiKu @ KKBM</title>
+<link rel="stylesheet" href="nav.css"/>
+<link rel="stylesheet" href="design.css"/>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  :root{--bg:#0d1117;--surface:#161b22;--border:#2d3748;--teal:#14b8a6;--teal-light:#2dd4bf;--teal-dim:#0d9488;--text:#e2e8f0;--muted:#8b949e;--white:#fff;}
+  body{font-family:-apple-system,"Segoe UI",system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;font-size:15px;}
+  a{color:var(--teal);text-decoration:none;}
+  .wrap{max-width:760px;margin:0 auto;padding:40px 2rem 60px;}
+  .back{font-size:13px;color:var(--muted);margin-bottom:24px;display:inline-flex;align-items:center;gap:6px;}
+  .back:hover{color:var(--teal);}
+  .hero-thumb{height:200px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:4rem;margin-bottom:28px;}
+  .t1{background:#134e4a;} .t2{background:#1e3a5f;} .t3{background:#4a1942;} .t4{background:#451a03;} .t5{background:#1a3a1a;} .t6{background:#3a2a1a;}
+  .badges{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;}
+  .badge{font-size:11px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;padding:4px 12px;border-radius:999px;}
+  .badge-free{background:#0d2926;color:var(--teal-light);}
+  .badge-paid{background:#2d1f03;color:#fbbf24;}
+  .badge-mod{background:#1a1f3a;color:#93c5fd;}
+  h1{font-size:2rem;font-weight:800;color:var(--white);margin-bottom:10px;}
+  .meta-row{display:flex;gap:20px;flex-wrap:wrap;margin-bottom:24px;}
+  .meta-item{font-size:13px;color:var(--muted);}
+  .meta-item strong{color:var(--text);}
+  .section-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:24px;margin-bottom:18px;}
+  .section-card h2{font-size:16px;font-weight:700;color:var(--white);margin-bottom:14px;}
+  .section-card p{font-size:14px;color:var(--muted);line-height:1.7;}
+  .modul-list{list-style:none;display:flex;flex-direction:column;gap:10px;}
+  .modul-item{display:flex;align-items:center;gap:12px;padding:12px;background:#0d1117;border-radius:10px;border:1px solid var(--border);}
+  .modul-num{min-width:28px;height:28px;background:var(--teal);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;}
+  .modul-title{font-size:13px;color:var(--text);font-weight:500;}
+  .sticky-enroll{position:fixed;bottom:0;left:0;right:0;background:rgba(22,27,34,0.97);border-top:1px solid var(--border);padding:16px 2rem;display:flex;align-items:center;justify-content:space-between;gap:12px;z-index:50;flex-wrap:wrap;}
+  .enroll-price{font-size:1.4rem;font-weight:800;color:var(--teal);}
+  .enroll-price small{font-size:12px;color:var(--muted);display:block;font-weight:400;}
+  .btn{background:var(--teal);color:#fff;font-weight:700;font-size:14px;padding:11px 24px;border-radius:10px;border:none;cursor:pointer;transition:background 0.2s;}
+  .btn:hover{background:var(--teal-dim);}
+  .btn-cart{background:var(--surface);color:var(--teal);border:1px solid var(--teal);font-weight:700;font-size:14px;padding:11px 20px;border-radius:10px;cursor:pointer;transition:background 0.2s;}
+  .btn-cart:hover{background:#0d2926;}
+  .btn-enrolled{background:#0d2926;color:var(--teal-light);border:1px solid var(--teal);font-weight:700;font-size:14px;padding:11px 20px;border-radius:10px;cursor:default;}
+  .toast{display:none;position:fixed;top:80px;right:20px;background:#0d2926;border:1px solid var(--teal-dim);color:var(--teal-light);padding:14px 20px;border-radius:12px;font-size:13px;font-weight:600;z-index:200;}
+  footer{border-top:1px solid var(--border);padding:24px 2rem 80px;text-align:center;color:var(--muted);font-size:12px;max-width:760px;margin:0 auto;}
+</style>
+</head>
+<body>
+<nav id="main-nav"></nav>
+
+<div class="wrap" id="content">
+  <a class="back" href="kursus.html">&larr; Kembali ke Senarai Kursus</a>
+  <div id="detail"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="logo.js"></script>
+<script src="nav.js"></script>
+<script src="ui.js"></script>
+<script>
+var kursus=[
+  {id:1,icon:'💻',bg:'t1',title:'Asas Literasi Digital',type:'percuma',mod:'online',price:'PERCUMA',harga:0,
+   desc:'Kursus ini direka untuk membantu komuniti memahami dan menggunakan teknologi digital dalam kehidupan seharian. Sesuai untuk semua peringkat umur.',
+   tempoh:'4 Minggu',pelajar:'234',pensyarah:'Pn. Rozita Hassan',
+   modul:['Pengenalan kepada Komputer & Internet','Penggunaan Emel dengan Selamat','Media Sosial & Etika Digital','Keselamatan Siber Asas','Membeli-belah Online dengan Bijak','Penilaian Akhir & Sijil']},
+  {id:2,icon:'📊',bg:'t2',title:'Microsoft Excel Intermediate',type:'berbayar',mod:'f2f',price:'RM 80',harga:80,
+   desc:'Tingkatkan kemahiran Excel anda ke tahap seterusnya. Kursus ini meliputi fungsi lanjutan, analisis data, dan visualisasi untuk keperluan kerja.',
+   tempoh:'6 Minggu',pelajar:'87',pensyarah:'En. Hafizuddin Aziz',
+   modul:['Ulangkaji Asas Excel','Fungsi Lanjutan (VLOOKUP, INDEX/MATCH)','Pivot Table & Pivot Chart','Conditional Formatting & Data Validation','Dashboard & Visualisasi Data','Projek Akhir & Pembentangan','Penilaian & Sijil','Soal Jawab & Penutup']},
+  {id:3,icon:'🎨',bg:'t3',title:'Reka Bentuk Grafik Asas',type:'percuma',mod:'online',price:'PERCUMA',harga:0,
+   desc:'Pelajari cara menghasilkan reka bentuk visual yang profesional menggunakan alat percuma seperti Canva dan Adobe Express.',
+   tempoh:'3 Minggu',pelajar:'312',pensyarah:'Pn. Siti Norzalikha',
+   modul:['Prinsip Asas Reka Bentuk Grafik','Teori Warna & Tipografi','Membina Poster dengan Canva','Reka Bentuk Media Sosial','Pembinaan Logo Asas','Penilaian Akhir & Sijil']},
+  {id:4,icon:'🛒',bg:'t4',title:'e-Dagang untuk Usahawan',type:'berbayar',mod:'f2f',price:'RM 120',harga:120,
+   desc:'Panduan lengkap untuk memulakan dan mengembangkan perniagaan online. Dari pendaftaran kedai hinggalah strategi pemasaran digital.',
+   tempoh:'8 Minggu',pelajar:'56',pensyarah:'En. Zulkarnain Osman',
+   modul:['Pengenalan e-Dagang & Platform','Mendaftar & Setup Shopee','Fotografi Produk dengan Telefon','Penulisan Deskripsi Produk','Strategi Harga & Promosi','TikTok Shop & Live Selling','Pengurusan Order & Penghantaran','Analitik & Laporan Jualan','Pemasaran Digital Asas','Projek Akhir & Sijil']},
+  {id:5,icon:'📱',bg:'t5',title:'Pengurusan Media Sosial',type:'percuma',mod:'online',price:'PERCUMA',harga:0,
+   desc:'Belajar strategi kandungan yang berkesan untuk meningkatkan kehadiran perniagaan anda di media sosial.',
+   tempoh:'2 Minggu',pelajar:'445',pensyarah:'Pn. Aina Sofea',
+   modul:['Strategi Kandungan Instagram','Facebook Page & Ads Asas','TikTok untuk Perniagaan','Jadual Kandungan & Tools','Penilaian Akhir & Sijil']},
+  {id:6,icon:'🍳',bg:'t6',title:'Keusahawanan Makanan & Minuman',type:'berbayar',mod:'f2f',price:'RM 60',harga:60,
+   desc:'Kursus praktikal untuk usahawan makanan — dari pelesenan hingga pembungkusan dan pemasaran produk F&B.',
+   tempoh:'4 Minggu',pelajar:'78',pensyarah:'Pn. Norashikin Md Isa',
+   modul:['Asas Perniagaan F&B','Pelesenan & Sijil Halal','Pembungkusan & Pelabelan','Penetapan Harga Produk','Pemasaran F&B di Media Sosial','Projek Akhir & Sijil']}
+];
+
+var params=new URLSearchParams(window.location.search);
+var id=parseInt(params.get('id'))||1;
+var k=kursus.find(function(x){return x.id===id;})||kursus[0];
+
+var enrolled=JSON.parse(localStorage.getItem('enrolled')||'[]');
+var isEnrolled=enrolled.indexOf(k.id)>=0;
+
+// Use admin-overridden mode if set
+var adminModes = JSON.parse(localStorage.getItem('admin_modes')||'{}');
+if (adminModes[k.id]) k.mod = adminModes[k.id];
+
+function modeBadge(mod) {
+  if (mod==='online') return '<span class="mode-badge mode-online">Online</span>';
+  if (mod==='f2f') return '<span class="mode-badge mode-f2f">Bersemuka (F2F)</span>';
+  return '<span class="mode-badge mode-hybrid">Hybrid</span>';
+}
+
+document.getElementById('detail').innerHTML=
+  '<div class="hero-thumb '+k.bg+'">'+k.icon+'</div>'+
+  '<div class="badges">'+
+    '<span class="badge '+(k.type==='percuma'?'badge-free':'badge-paid')+'">'+(k.type==='percuma'?'Percuma':'Berbayar')+'</span>'+
+    modeBadge(k.mod)+
+  '</div>'+
+  '<h1>'+k.title+'</h1>'+
+  '<div class="meta-row">'+
+    '<div class="meta-item"><strong>&#128336; Tempoh:</strong> '+k.tempoh+'</div>'+
+    '<div class="meta-item"><strong>&#128101; Pelajar:</strong> '+k.pelajar+' berdaftar</div>'+
+    '<div class="meta-item"><strong>&#127891; Pensyarah:</strong> '+k.pensyarah+'</div>'+
+  '</div>'+
+  '<div class="section-card"><h2>Tentang Kursus Ini</h2><p>'+k.desc+'</p></div>'+
+  '<div class="section-card"><h2>Modul Kursus ('+k.modul.length+' Modul)</h2>'+
+    '<ul class="modul-list">'+k.modul.map(function(m,i){
+      return '<li class="modul-item"><div class="modul-num">'+(i+1)+'</div><div class="modul-title">'+m+'</div></li>';
+    }).join('')+'</ul>'+
+  '</div>';
+
+var inCart = JSON.parse(localStorage.getItem('kkbm_cart')||'[]').indexOf(k.id) >= 0;
+
+document.body.insertAdjacentHTML('beforeend',
+  '<div class="sticky-enroll">'+
+    '<div class="enroll-price">'+k.price+'<small>Sijil KKBM disertakan</small></div>'+
+    '<div style="display:flex;gap:10px;flex-wrap:wrap;">'+
+    (isEnrolled
+      ? '<button class="btn-enrolled">&#10003; Sudah Didaftarkan</button>'
+      : (k.type==='percuma'
+          ? '<button class="btn" id="enrollBtn" onclick="enroll()">Daftar Percuma &rarr;</button>'
+          : '<button class="btn" id="enrollBtn" onclick="enroll()">Daftar Kursus &rarr;</button>'
+        )+
+        (inCart
+          ? '<button class="btn-enrolled" onclick="window.location=\'cart.html\'">&#128722; Dalam Cart</button>'
+          : '<button class="btn-cart" id="cartBtn" onclick="addToCart()">&#128722; Tambah ke Cart</button>'
+        )
+    )+
+    '</div>'+
+  '</div>'
+);
+
+function enroll(){
+  var user=JSON.parse(localStorage.getItem('kkbm_user')||'null');
+  if(!user){window.location='login.html';return;}
+  var enrolled=JSON.parse(localStorage.getItem('enrolled')||'[]');
+  if(enrolled.indexOf(k.id)<0)enrolled.push(k.id);
+  localStorage.setItem('enrolled',JSON.stringify(enrolled));
+  var btn=document.getElementById('enrollBtn');
+  if(btn){btn.outerHTML='<button class="btn-enrolled">&#10003; Sudah Didaftarkan</button>';}
+  var t=document.getElementById('toast');
+  t.textContent='&#10003; Berjaya didaftarkan dalam "'+k.title+'"!';
+  t.style.display='block';
+  setTimeout(function(){t.style.display='none';},3000);
+}
+function addToCart(){
+  var cart=JSON.parse(localStorage.getItem('kkbm_cart')||'[]');
+  if(cart.indexOf(k.id)<0)cart.push(k.id);
+  localStorage.setItem('kkbm_cart',JSON.stringify(cart));
+  var btn=document.getElementById('cartBtn');
+  if(btn){btn.outerHTML='<button class="btn-enrolled" onclick="window.location=\'cart.html\'">&#128722; Dalam Cart</button>';}
+  var t=document.getElementById('toast');
+  t.textContent='&#128722; "'+k.title+'" ditambah ke cart!';
+  t.style.display='block';
+  setTimeout(function(){t.style.display='none';},3000);
+}
+</script>
+
+<footer>&copy; 2025 KomunitiKu @ KKBM &middot; <a href="kursus.html">Lihat Semua Kursus</a></footer>
+</body>
+</html>
